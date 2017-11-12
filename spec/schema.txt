@@ -1,0 +1,7 @@
+Mark (id, name, icon, type)
+Team (id, name, color, createdAt)
+Game (id, startedAt, initialPoints, doubleAttack, gridWidth, gridHeight)
+Actions (id, type, x, y, #markInstance, #game)
+Configuration (id, initialPoints, doubleAttack, gridWidth, gridHeight)  
+TeamMark (id, id, damage, hp, mana, x, y, #team, #mark)
+GameTeam (id, won, #game, #team)
