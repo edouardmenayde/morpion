@@ -1,0 +1,23 @@
+{
+  "name": "Morpion",
+  "description": "",
+  "keywords": [],
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Edouard Menayde"
+    },
+    {
+      "name": "Aristide Dullin"
+    }
+  ],
+  "require": {
+    "php": ">=7.1.1",
+    "filp/whoops": "~2.1"
+  },
+  "autoload": {
+    "psr-4": {
+      "Epic\\": "src/"
+    }
+  }
+}
