@@ -15,4 +15,3 @@ class Homepage
         echo $view->render('layout.php');
     }
 }
-
