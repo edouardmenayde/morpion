@@ -1,17 +1,17 @@
 DROP TABLE IF EXISTS MarkModel;
 CREATE TABLE MarkModel (
   id INT PRIMARY KEY AUTO_INCREMENT,
-  name VARCHAR(255),
+  name VARCHAR(255) NOT NULL,
   icon VARCHAR(255),
-  type ENUM('warrior', 'wizard', 'archer')
+  type ENUM('warrior', 'wizard', 'archer') NOT NULL
 ) ENGINE=InnoDB;
 
 DROP TABLE IF EXISTS Team;
 CREATE TABLE Team (
   id INT PRIMARY KEY AUTO_INCREMENT,
-  name VARCHAR(255),
-  color INT,
-  createdAt DATETIME
+  name VARCHAR(255) NOT NULL,
+  color INT NOT NULL,
+  createdAt DATETIME NOT NULL
 ) ENGINE=InnoDB;
 
 DROP TABLE IF EXISTS Game;
