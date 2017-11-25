@@ -1,6 +1,6 @@
-<?php
+<?php declare(strict_types=1);
 
-namespace Epic\Template;
+namespace Epic\Templates;
 
 class Template
 {

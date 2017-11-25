@@ -2,7 +2,7 @@
 
 namespace Epic\Controllers;
 
-use Epic\Template\Template;
+use Epic\Templates\Template;
 
 class Homepage
 {
