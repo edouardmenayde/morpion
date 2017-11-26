@@ -9,6 +9,7 @@ html {
 html, body {
     margin: 0;
     background: #eee;
+    font-family: 'Roboto', sans-serif;
 }
 
 .home-container {
@@ -31,7 +32,6 @@ html, body {
 .header-title {
     text-decoration: none;
     color: #212121;
-    font-family: 'Roboto', sans-serif;
     margin: 0 0 0 1em;
 }
 
@@ -73,26 +73,64 @@ html, body {
     text-align: center;
 }
 
-.form-container {
+.form-team-container {
     display: flex;
     height: 100%;
     justify-content: center;
     align-items: center;
 }
 
-.team-form {
-    height: 17.5em;
-    width: 30em;
+.form-team {
     background: #ffffff;
     padding: 2em;
+    margin: 0 2.5em;
 }
 
-.form-group {
+.form-team-subform-container {
+    display: grid;
+    justify-content: center;
+    grid-template-columns: 1fr 1fr;
+    grid-column-gap: 2em;
+    margin-bottom: 2em;
+}
+
+.form-team-submit-container {
+    text-align: center;
+}
+
+.form-team-mark {
+    width: 3rem;
+    height: 3rem;
+    background-image: url('/images/warriors/viking.png');
+    background-color: #ececec;
+    background-size: cover;
+    border: 2px solid #616161;
+    display: inline-block;
+    margin: 5px;
+    cursor: pointer;
+}
+
+.form-team-marks {
+    display: inline-flex;
+    align-items: center;
+    justify-content: flex-end;
+    width: 100%;
+}
+
+.form-team-marks-title {
+    display: inline-block;
+    margin-right: auto;
+}
+
+.form-team-mark-selected {
+    border-color: #1f57ff;
+}
+
+.form-group:not(:last-of-type) {
     padding-bottom: 1em;
 }
 
 .form-group label {
-    font-family: 'Roboto', sans-serif;
     display: block;
     margin-bottom: 0.5em;
 }
@@ -137,4 +175,8 @@ html, body {
 
 .submit-input:hover {
     background: #ececec;
+}
+
+.hide {
+    display: none;
 }

@@ -2,10 +2,16 @@
 
 namespace Epic\Entities;
 
+abstract class MarkModelType {
+    const wizard = 'wizard';
+    const warrior = 'warrior';
+    const archer = 'archer';
+}
+
 class MarkModel
 {
-    private $id;
-    private $name;
-    private $icon;
-    private $type;
+    public $id;
+    public $name;
+    public $icon;
+    public $type;
 }
