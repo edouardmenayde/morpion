@@ -7,7 +7,8 @@ class Game
     public $id;
     public $startedAt;
     public $initialPoints;
-    public $doubleAttack;
+    public $initialDoubleAttack;
+    public $maxDoubleAttack;
     public $gridWidth;
     public $gridHeight;
     public $team1Id;

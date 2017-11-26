@@ -8,20 +8,15 @@ class TeamRepository extends Repository
     {
         $connection = $this->getConnection();
 
-        $request = $connection->prepare('INSERT INTO Team (name, color, createdAt) VALUES (:name, :color, :createdAt)');
-
-        $createdAt = date(DATE_ISO8601);
+        $request = $connection->prepare('INSERT INTO Team (name, color) VALUES (:name, :color)');
 
         $request->execute(array(
             ':name' => $team->name,
-            ':color' => $team->color,
-            ':createdAt' => $createdAt
+            ':color' => $team->color
         ));
 
-        $team->createdAt = $createdAt;
         $team->id = $connection->lastInsertId();
 
         return $team;
-
     }
 }

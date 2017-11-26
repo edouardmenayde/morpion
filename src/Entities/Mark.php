@@ -11,6 +11,7 @@ class Mark
     public $mana;
     public $x;
     public $y;
+    public $doubleAttack;
     public $teamId;
     public $markModelId;
 }

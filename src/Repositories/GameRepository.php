@@ -10,14 +10,13 @@ class GameRepository extends Repository
     {
         $connection = $this->getConnection();
 
-        $request = $connection->prepare('INSERT INTO Game (startedAt, initialPoints, doubleAttack, gridWidth, gridHeight, team1Id, team2Id) VALUES (:startedAt, :initialPoints, :doubleAttack, :gridWidth, :gridHeight, :team1Id, :team2Id)');
+        $request = $connection->prepare('INSERT INTO Game (initialPoints, initialDoubleAttack, maxDoubleAttack, gridWidth, gridHeight, team1Id, team2Id) VALUES (:initialPoints, :initialDoubleAttack, :maxDoubleAttack, :gridWidth, :gridHeight, :team1Id, :team2Id)');
 
-        $game->startedAt = date(DATE_ISO8601);
 
         $request->execute(array(
-            ':startedAt' => $game->startedAt,
             ':initialPoints' => $game->initialPoints,
-            ':doubleAttack' => $game->doubleAttack,
+            ':initialDoubleAttack' => $game->initialDoubleAttack,
+            ':maxDoubleAttack' => $game->maxDoubleAttack,
             ':gridWidth' => $game->gridWidth,
             ':gridHeight' => $game->gridHeight,
             ':team1Id' => $game->team1Id,
