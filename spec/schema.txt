@@ -1,4 +1,4 @@
-MarkModel (id, name, icon, type)
+MarkModel (id, name, icon, type, damage, hp, mana)
 Team (id, name, color, createdAt)
 Game (id, startedAt, initialPoints, initialDoubleAttack, maxDoubleAttack, gridWidth, gridHeight, #team1Id, #team2Id, #winnerId)
 Actions (id, type, x, y, #gameTeamId, #gameId)
