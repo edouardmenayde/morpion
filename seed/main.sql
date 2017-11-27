@@ -1,9 +1,12 @@
 DROP TABLE IF EXISTS MarkModel;
 CREATE TABLE MarkModel (
-  id   INT PRIMARY KEY AUTO_INCREMENT,
-  name VARCHAR(255)                         NOT NULL,
-  icon VARCHAR(255),
-  type ENUM ('warrior', 'wizard', 'archer') NOT NULL
+  id     INT PRIMARY KEY AUTO_INCREMENT,
+  name   VARCHAR(255)                         NOT NULL,
+  icon   VARCHAR(255),
+  type   ENUM ('warrior', 'wizard', 'archer') NOT NULL,
+  damage INT                                  NOT NULL,
+  hp     INT                                  NOT NULL,
+  mana   INT                                  NOT NULL
 )
   ENGINE = InnoDB;
 
@@ -57,14 +60,14 @@ CREATE TABLE Configuration (
 DROP TABLE IF EXISTS Mark;
 CREATE TABLE Mark (
   id           INT PRIMARY KEY AUTO_INCREMENT,
-  damage       INT,
-  hp           INT,
-  mana         INT,
+  damage       INT NOT NULL,
+  hp           INT NOT NULL,
+  mana         INT NOT NULL,
   x            INT,
   y            INT,
-  doubleAttack INT,
-  teamId       INT,
-  markModelId  INT
+  doubleAttack INT NOT NULL ,
+  teamId       INT NOT NULL,
+  markModelId  INT NOT NULL
 )
   ENGINE = InnoDB;
 
