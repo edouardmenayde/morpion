@@ -1,6 +1,15 @@
+html {
+    box-sizing: border-box;
+}
+
+*, *:before, *:after {
+    box-sizing: inherit;
+}
+
 html, body {
     margin: 0;
     background: #eee;
+    font-family: 'Roboto', sans-serif;
 }
 
 .home-container {
@@ -23,7 +32,6 @@ html, body {
 .header-title {
     text-decoration: none;
     color: #212121;
-    font-family: 'Roboto', sans-serif;
     margin: 0 0 0 1em;
 }
 
@@ -48,6 +56,7 @@ html, body {
 
 #main {
     grid-area: main;
+    width: 100%;
 }
 
 #footer {
@@ -62,4 +71,112 @@ html, body {
 
 .footer-year {
     text-align: center;
+}
+
+.form-team-container {
+    display: flex;
+    height: 100%;
+    justify-content: center;
+    align-items: center;
+}
+
+.form-team {
+    background: #ffffff;
+    padding: 2em;
+    margin: 0 2.5em;
+}
+
+.form-team-subform-container {
+    display: grid;
+    justify-content: center;
+    grid-template-columns: 1fr 1fr;
+    grid-column-gap: 2em;
+    margin-bottom: 2em;
+}
+
+.form-team-submit-container {
+    text-align: center;
+}
+
+.form-team-mark {
+    width: 3rem;
+    height: 3rem;
+    background-image: url('/images/warriors/viking.png');
+    background-color: #ececec;
+    background-size: cover;
+    border: 2px solid #616161;
+    display: inline-block;
+    margin: 5px;
+    cursor: pointer;
+}
+
+.form-team-marks {
+    display: inline-flex;
+    align-items: center;
+    justify-content: flex-end;
+    width: 100%;
+}
+
+.form-team-marks-title {
+    display: inline-block;
+    margin-right: auto;
+}
+
+.form-team-mark-selected {
+    border-color: #1f57ff;
+}
+
+.form-group:not(:last-of-type) {
+    padding-bottom: 1em;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 0.5em;
+}
+
+.form-control {
+    display: block;
+    width: 100%;
+    padding: .375rem .75rem;
+    font-size: 1rem;
+    line-height: 1.5;
+    color: #495057;
+    background-color: #fff;
+    background-image: none;
+    background-clip: padding-box;
+    border: 1px solid #ced4da;
+    border-radius: .25rem;
+    transition: border-color ease-in-out .15s, box-shadow ease-in-out .15s;
+}
+
+.color-input {
+    border: 1px solid #ced4da;
+    height: 2em;
+    padding: 0;
+    width: 2em;
+}
+
+.submit-input {
+    cursor: pointer;
+    display: inline-block;
+    font-weight: 400;
+    text-align: center;
+    white-space: nowrap;
+    vertical-align: middle;
+    user-select: none;
+    border: 1px solid transparent;
+    padding: .375rem .75rem;
+    font-size: 1rem;
+    line-height: 1.5;
+    border-radius: .25rem;
+    transition: background-color .15s ease-in-out, border-color .15s ease-in-out, box-shadow .15s ease-in-out;
+}
+
+.submit-input:hover {
+    background: #ececec;
+}
+
+.hide {
+    display: none;
 }

@@ -1,96 +1,112 @@
 DROP TABLE IF EXISTS MarkModel;
 CREATE TABLE MarkModel (
-  id INT PRIMARY KEY AUTO_INCREMENT,
-  name VARCHAR(255),
+  id   INT PRIMARY KEY AUTO_INCREMENT,
+  name VARCHAR(255)                         NOT NULL,
   icon VARCHAR(255),
-  type ENUM('warrior', 'wizard', 'archer')
-) ENGINE=InnoDB;
+  type ENUM ('warrior', 'wizard', 'archer') NOT NULL
+)
+  ENGINE = InnoDB;
 
 DROP TABLE IF EXISTS Team;
 CREATE TABLE Team (
-  id INT PRIMARY KEY AUTO_INCREMENT,
-  name VARCHAR(255),
-  color INT,
-  createdAt DATETIME
-) ENGINE=InnoDB;
+  id        INT PRIMARY KEY AUTO_INCREMENT,
+  name      VARCHAR(255)                       NOT NULL,
+  color     INT                                NOT NULL,
+  createdAt DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL
+)
+  ENGINE = InnoDB;
 
 DROP TABLE IF EXISTS Game;
 CREATE TABLE Game (
-  id INT PRIMARY KEY AUTO_INCREMENT,
-  startedAt TIMESTAMP,
-  initialPoints INT,
-  doubleAttack INT,
-  gridWidth INT,
-  gridHeight INT,
-  team1Id INT,
-  team2Id INT,
-  winnerId INT
-) ENGINE=InnoDB;
+  id                  INT PRIMARY KEY AUTO_INCREMENT,
+  startedAt           DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL,
+  initialPoints       INT,
+  initialDoubleAttack INT,
+  maxDoubleAttack     INT,
+  gridWidth           INT,
+  gridHeight          INT,
+  team1Id             INT                                NOT NULL,
+  team2Id             INT                                NOT NULL,
+  winnerId            INT
+)
+  ENGINE = InnoDB;
 
 DROP TABLE IF EXISTS Actions;
 CREATE TABLE Actions (
-  id INT PRIMARY KEY AUTO_INCREMENT,
-  type ENUM('placement', 'attack', 'spell'),
-  x INT,
-  y INT,
+  id         INT PRIMARY KEY AUTO_INCREMENT,
+  type       ENUM ('placement', 'attack', 'spell'),
+  x          INT,
+  y          INT,
   teamMarkId INT,
-  gameId INT
-) ENGINE=InnoDB;
+  gameId     INT
+)
+  ENGINE = InnoDB;
 
 DROP TABLE IF EXISTS Configuration;
 CREATE TABLE Configuration (
-  id INT PRIMARY KEY AUTO_INCREMENT,
-  initialPoints INT,
-  doubleAttack INT,
-  gridWidth INT,
-  gridHeight INT
-) ENGINE=InnoDB;
+  id                  INT PRIMARY KEY AUTO_INCREMENT,
+  initialPoints       INT,
+  initialDoubleAttack INT,
+  maxDoubleAttack     INT,
+  gridWidth           INT,
+  gridHeight          INT
+)
+  ENGINE = InnoDB;
 
 
 DROP TABLE IF EXISTS Mark;
 CREATE TABLE Mark (
-  id INT PRIMARY KEY AUTO_INCREMENT,
-  damage INT,
-  hp INT,
-  mana INT,
-  x INT,
-  y INT,
-  teamId INT,
-  markModelId INT
-) ENGINE=InnoDB;
+  id           INT PRIMARY KEY AUTO_INCREMENT,
+  damage       INT,
+  hp           INT,
+  mana         INT,
+  x            INT,
+  y            INT,
+  doubleAttack INT,
+  teamId       INT,
+  markModelId  INT
+)
+  ENGINE = InnoDB;
 
 
-ALTER TABLE Actions ADD
+ALTER TABLE Actions
+  ADD
   CONSTRAINT FK_Actions_id_Game
   FOREIGN KEY (gameID)
-  REFERENCES Game(id);
+  REFERENCES Game (id);
 
-ALTER TABLE Actions ADD
+ALTER TABLE Actions
+  ADD
   CONSTRAINT FK_Actions_id_Mark
   FOREIGN KEY (teamMarkId)
-  REFERENCES Mark(id);
+  REFERENCES Mark (id);
 
-ALTER TABLE Mark ADD
+ALTER TABLE Mark
+  ADD
   CONSTRAINT FK_Mark_id_MarkModel
   FOREIGN KEY (markModelId)
-  REFERENCES MarkModel(id);
+  REFERENCES MarkModel (id);
 
-ALTER TABLE Mark ADD
+ALTER TABLE Mark
+  ADD
   CONSTRAINT FK_Mark_id_Team
   FOREIGN KEY (teamId)
-  REFERENCES Team(id);
+  REFERENCES Team (id);
 
-ALTER TABLE Game ADD
+ALTER TABLE Game
+  ADD
   CONSTRAINT FK_Game_team1Id_Team
-  FOREIGN KEY(team1Id)
-  REFERENCES Team(id);
+  FOREIGN KEY (team1Id)
+  REFERENCES Team (id);
 
-ALTER TABLE Game ADD
+ALTER TABLE Game
+  ADD
   CONSTRAINT FK_Game_team2Id_Team
-  FOREIGN KEY(team2Id)
-  REFERENCES Team(id);
+  FOREIGN KEY (team2Id)
+  REFERENCES Team (id);
 
-ALTER TABLE Game ADD
+ALTER TABLE Game
+  ADD
   CONSTRAINT FK_Game_winnerId_Team
-  FOREIGN KEY(winnerId)
-  REFERENCES Team(id);
+  FOREIGN KEY (winnerId)
+  REFERENCES Team (id);
