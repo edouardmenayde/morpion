@@ -18,3 +18,7 @@ if ($environment !== 'production') {
 }
 
 $whoops->register();
+
+$dirname = $_SERVER['REQUEST_URI'];
+define('BASE_FOLDER', $dirname);
+define('SITE_URL', 'http://' . $_SERVER['HTTP_HOST'] . BASE_FOLDER . '/');

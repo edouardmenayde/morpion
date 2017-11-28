@@ -55,7 +55,7 @@
                                 <div onclick="selectMark(<?php echo $team; ?>, this)"
                                      class="form-team-mark"
                                      data-mark-id="<?php echo $warrior->id; ?>"
-                                     style="background-image: url('/images/warriors/valkyrie')"
+                                     style="background-image: url('./images/warriors/valkyrie')"
                                      data-team="<?php echo $team; ?>"></div>
                                 <?php
                             }
