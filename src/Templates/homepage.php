@@ -80,7 +80,8 @@
         </div>
 
         <div class="form-group form-team-submit-container">
-            <input class="submit-input" type="submit" value="Créer"/>
+            <input class="submit-input" type="submit" value="Jouer (mode tradi)"/>
+            <input class="submit-input" type="submit" value="Jouer (mode avancé)"/>
         </div>
     </form>
 </div>

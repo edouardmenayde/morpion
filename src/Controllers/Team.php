@@ -5,6 +5,7 @@ namespace Epic\Controllers;
 use Epic\Entities\Game;
 use Epic\Entities\Mark;
 use Epic\Repositories\GameRepository;
+use Epic\Repositories\MarkModelRepository;
 use Epic\Repositories\MarkRepository;
 use Epic\Repositories\TeamRepository;
 use Epic\Templates\Template;
@@ -63,20 +64,38 @@ class Team
         $game->team2Id = $teams[1]->id;
         $game->gridHeight = 3;
         $game->gridWidth = 3;
-        $game->doubleAttack = 30;
+        $game->initialDoubleAttack = 30;
+        $game->maxDoubleAttack = 30;
         $game->initialPoints = 10;
 
         $game = $gameRepository->insert($game);
+
+        $markModelRepository = new MarkModelRepository();
+        $markModels = $markModelRepository->getAll();
 
         $markRepository = new MarkRepository();
 
         $id = 0;
         foreach ($newTeams as $team) {
             foreach ($team['marks'] as $newMark) {
-                $mark = new Mark();
-                $mark->markModelId = $newMark;
-                $mark->teamId = $teams[$id]->id;
-                $markRepository->insert($mark);
+                $matchingMarkModel = null;
+
+                foreach ($markModels as $markModel) {
+                    if ($newMark == $markModel->id) {
+                        $matchingMarkModel = $markModel;
+                        break;
+                    }
+                }
+
+                if ($matchingMarkModel) {
+                    $mark = new Mark();
+                    $mark->damage = $matchingMarkModel->damage;
+                    $mark->hp = $matchingMarkModel->hp;
+                    $mark->mana = $matchingMarkModel->mana;
+                    $mark->markModelId = $newMark;
+                    $mark->teamId = $teams[$id]->id;
+                    $markRepository->insert($mark);
+                }
             }
 
             $id += 1;
