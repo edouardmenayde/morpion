@@ -12,7 +12,6 @@ class GameRepository extends Repository
 
         $request = $connection->prepare('INSERT INTO Game (initialPoints, initialDoubleAttack, maxDoubleAttack, gridWidth, gridHeight, team1Id, team2Id) VALUES (:initialPoints, :initialDoubleAttack, :maxDoubleAttack, :gridWidth, :gridHeight, :team1Id, :team2Id)');
 
-
         $request->execute(array(
             ':initialPoints' => $game->initialPoints,
             ':initialDoubleAttack' => $game->initialDoubleAttack,

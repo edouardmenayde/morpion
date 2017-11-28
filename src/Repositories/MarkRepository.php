@@ -10,15 +10,17 @@ class MarkRepository extends Repository
     {
         $connection = $this->getConnection();
 
-        $request = $connection->prepare('INSERT INTO Mark (damage, hp, mana, teamId, markModelId) VALUES (:damage, :hp, :mana, :teamId, :markModelId)');
+        $request = $connection->prepare('INSERT INTO Mark (damage, hp, mana, doubleAttack, teamId, markModelId) VALUES (:damage, :hp, :mana, :doubleAttack, :teamId, :markModelId)');
 
         $request->execute(array(
             ':damage' => $mark->damage,
             ':hp' => $mark->hp,
             ':mana' => $mark->mana,
+            ':doubleAttack' => $mark->doubleAttack,
             ':teamId' => $mark->teamId,
             ':markModelId' => $mark->markModelId
         ));
+
 
         $mark->id = $connection->lastInsertId();
 

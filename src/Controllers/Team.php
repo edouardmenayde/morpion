@@ -35,12 +35,12 @@ class Team
         $teams = [];
 
         if (count($newTeams) !== 2) {
-            die();
+            throw new \Exception("Two teams should be sent.");
         }
 
         foreach ($newTeams as $newTeam) {
             if (!$this->validateTeam($newTeam)) {
-                die();
+                throw new \Exception("Can't validate team.");
             }
 
             $team = new Team();
@@ -92,6 +92,7 @@ class Team
                     $mark->damage = $matchingMarkModel->damage;
                     $mark->hp = $matchingMarkModel->hp;
                     $mark->mana = $matchingMarkModel->mana;
+                    $mark->doubleAttack = 20;
                     $mark->markModelId = $newMark;
                     $mark->teamId = $teams[$id]->id;
                     $markRepository->insert($mark);

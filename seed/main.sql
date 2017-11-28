@@ -14,7 +14,7 @@ DROP TABLE IF EXISTS Team;
 CREATE TABLE Team (
   id        INT PRIMARY KEY AUTO_INCREMENT,
   name      VARCHAR(255)                       NOT NULL,
-  color     INT                                NOT NULL,
+  color     VARCHAR(255)                       NOT NULL,
   createdAt DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL
 )
   ENGINE = InnoDB;
@@ -65,7 +65,7 @@ CREATE TABLE Mark (
   mana         INT NOT NULL,
   x            INT,
   y            INT,
-  doubleAttack INT NOT NULL ,
+  doubleAttack INT NOT NULL,
   teamId       INT NOT NULL,
   markModelId  INT NOT NULL
 )

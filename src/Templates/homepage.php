@@ -1,5 +1,5 @@
 <div class="form-team-container">
-    <form class="form-team" method="post" action="/team.php">
+    <form class="form-team" method="post" action="<?php echo SITE_URL ?>team.php">
         <div class="form-team-subform-container">
             <?php foreach ([1, 2] as $team) { ?>
                 <div>
