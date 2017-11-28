@@ -3,7 +3,7 @@
 require __DIR__ . '/../src/Bootstrap.php';
 
 if (!$_POST) {
-    die();
+    throw new \Exception("Page should be called with POST");
 }
 
 use Epic\Controllers\Team;

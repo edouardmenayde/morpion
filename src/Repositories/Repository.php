@@ -21,6 +21,9 @@ abstract class Repository
 
     protected function getConnection()
     {
-        return new PDO($this->config['dsn'], $this->config['username'], $this->config['password']);
+        $pdo = new PDO($this->config['dsn'], $this->config['username'], $this->config['password']);
+        $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+
+        return $pdo;
     }
 }
