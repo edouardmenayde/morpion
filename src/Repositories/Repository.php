@@ -11,18 +11,16 @@ use PDO;
  */
 abstract class Repository
 {
-    const USERNAME = 'root';
-    const PASSWORD = '';
-    const HOST = 'localhost';
-    const DB = 'morpion';
+
+    private $config;
+
+    public function __construct()
+    {
+        $this->config = include(__DIR__ . '/../../config/database.php');
+    }
 
     protected function getConnection()
     {
-        $username = self::USERNAME;
-        $password = self::PASSWORD;
-        $host = self::HOST;
-        $db = self::DB;
-
-        return new PDO("mysql:dbname=$db;host=$host;charset=utf8;unix_socket=/run/mysqld/mysqld.sock", $username, $password);
+        return new PDO($this->config['dsn'], $this->config['username'], $this->config['password']);
     }
 }
