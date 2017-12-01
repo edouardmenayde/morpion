@@ -98,6 +98,10 @@ html, body {
     text-align: center;
 }
 
+.form-gridsize {
+    text-align: center;    
+}
+
 .form-team-mark {
     width: 3rem;
     height: 3rem;
