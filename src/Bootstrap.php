@@ -21,6 +21,14 @@ if ($environment !== 'production') {
 
 $whoops->register();
 
-$dirname = $_SERVER['REQUEST_URI'];
+$requestUri = $_SERVER['REQUEST_URI'];
+
+if (isset(pathinfo($requestUri)['extension'])) {
+    $dirname = dirname($requestUri);
+}
+else {
+    $dirname = $requestUri;
+}
+
 define('BASE_FOLDER', $dirname);
 define('SITE_URL', 'http://' . $_SERVER['HTTP_HOST'] . BASE_FOLDER . '/');

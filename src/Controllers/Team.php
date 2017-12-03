@@ -9,6 +9,7 @@ use Epic\Repositories\MarkModelRepository;
 use Epic\Repositories\MarkRepository;
 use Epic\Repositories\TeamRepository;
 use Epic\Templates\Template;
+use Epic\Entities\MarkModelType;
 
 class Team
 {
@@ -22,25 +23,60 @@ class Team
             return false;
         }
 
-        if (count($team['marks']) < 4 && count($team['marks']) > 8) {
-            return false;
-        }
-
         return true;
     }
 
     public function show()
     {
-        $newTeams = $_POST;
+        $markModelRepository = new MarkModelRepository();
+
+        $markModels = $markModelRepository->getAll();
+
+        $wizards = [];
+        $warriors = [];
+        $archers = [];
+
+        foreach ($markModels as $markModel) {
+            switch ($markModel->type) {
+                case MarkModelType::warrior:
+                    array_push($warriors, $markModel);
+                    break;
+                case MarkModelType::archer:
+                    array_push($archers, $markModel);
+                    break;
+                case MarkModelType::wizard:
+                    array_push($wizards, $markModel);
+                    break;
+                default:
+                    throw new \Exception("Could not find matching type for this mark.");
+            }
+        }
+
+        $homePageView = new Template();
+        $homePageView->markModels = $markModels;
+        $homePageView->warriors = $warriors;
+        $homePageView->wizards = $wizards;
+        $homePageView->archers = $archers;
+        $homePageView->gameType = isset($_GET['type']) ? $_GET['type'] : 'classic';
+
+        $view = new Template();
+        $view->content = $homePageView->render('team.php');
+
+        echo $view->render('layout.php');
+    }
+
+    public function create()
+    {
+        $newTeams = [$_POST['team1'], $_POST['team2']];
         $teams = [];
 
         if (count($newTeams) !== 2) {
-            throw new \Exception("Two teams should be sent.");
+            throw new \Exception('Two teams should be sent.');
         }
 
         foreach ($newTeams as $newTeam) {
             if (!$this->validateTeam($newTeam)) {
-                throw new \Exception("Can't validate team.");
+                throw new \Exception('Can\'t validate team.');
             }
 
             $team = new Team();
@@ -70,41 +106,42 @@ class Team
 
         $game = $gameRepository->insert($game);
 
-        $markModelRepository = new MarkModelRepository();
-        $markModels = $markModelRepository->getAll();
+        if ($_POST['type'] === 'advanced') {
+            $markModelRepository = new MarkModelRepository();
+            $markModels = $markModelRepository->getAll();
 
-        $markRepository = new MarkRepository();
+            $markRepository = new MarkRepository();
 
-        $id = 0;
-        foreach ($newTeams as $team) {
-            foreach ($team['marks'] as $newMark) {
-                $matchingMarkModel = null;
+            $id = 0;
+            foreach ($newTeams as $team) {
+                foreach ($team['marks'] as $newMark) {
+                    $matchingMarkModel = null;
 
-                foreach ($markModels as $markModel) {
-                    if ($newMark == $markModel->id) {
-                        $matchingMarkModel = $markModel;
-                        break;
+                    foreach ($markModels as $markModel) {
+                        if ($newMark == $markModel->id) {
+                            $matchingMarkModel = $markModel;
+                            break;
+                        }
+                    }
+
+                    if ($matchingMarkModel) {
+                        $mark = new Mark();
+                        $mark->damage = $matchingMarkModel->damage;
+                        $mark->hp = $matchingMarkModel->hp;
+                        $mark->mana = $matchingMarkModel->mana;
+                        $mark->doubleAttack = 20;
+                        $mark->markModelId = $newMark;
+                        $mark->teamId = $teams[$id]->id;
+                        $markRepository->insertAdvanced($mark);
                     }
                 }
 
-                if ($matchingMarkModel) {
-                    $mark = new Mark();
-                    $mark->damage = $matchingMarkModel->damage;
-                    $mark->hp = $matchingMarkModel->hp;
-                    $mark->mana = $matchingMarkModel->mana;
-                    $mark->doubleAttack = 20;
-                    $mark->markModelId = $newMark;
-                    $mark->teamId = $teams[$id]->id;
-                    $markRepository->insert($mark);
-                }
+                $id += 1;
             }
-
-            $id += 1;
         }
 
-//        $view = new Template();
-//        $view->content = $homePageView->render('homepage.php');
 
-//        echo $view->render('layout.php');
+        header('Location: ' . SITE_URL . 'game.php?id=' . $game->id);
+        die();
     }
 }
