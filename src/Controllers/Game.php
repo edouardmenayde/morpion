@@ -26,13 +26,30 @@ function isIllegalPlacement($game, $x, $y)
     return testForTeam($game->team1, $x, $y) || testForTeam($game->team2, $x, $y);
 }
 
+function getNextTeam($game)
+{
+    if (count($game->team1->marks) == 0) {
+        return $game->team1->id;
+    }
+
+    if (count($game->team2->marks) == 0) {
+        return $game->team2->id;
+    }
+
+    if ($game->team1->marks[0]->id > $game->team2->marks[0]->id) { // check if most recent team who played is the first one
+        return $game->team2->id;
+    }
+
+    return $game->team1->id;
+}
+
 class Game
 {
     public function show()
     {
         $gameRepository = new GameRepository();
 
-        $game = $gameRepository->get((int)$_GET['id']);
+        $game = $gameRepository->getWithMarks((int)$_GET['id']);
 
         $gameView = new Template();
         $gameView->game = $game;
@@ -43,9 +60,33 @@ class Game
         echo $view->render('layout.php');
     }
 
+    public function validateClassic($post)
+    {
+        if (!isset($post['gameId']) && $post['gameId'] < 0) {
+            return false;
+        }
+
+        if (!isset($post['x']) && $post['x'] < 0) {
+            return false;
+        }
+
+        if (!isset($post['y']) && $post['y'] < 0) {
+            return false;
+        }
+
+        return true;
+    }
+
     public function classic()
     {
         header('Content-type:application/json;charset=utf-8');
+
+        if (!$_POST || !$this->validateClassic($_POST)) {
+            http_response_code(500);
+
+            echo json_encode(['error' => 'server_error']);
+            return;
+        }
 
         $gameId = $_POST['gameId'];
         $x = $_POST['x'];
@@ -56,31 +97,25 @@ class Game
         $game = $gameRepository->getWithMarks((int)$gameId);
 
         if (!$game) {
-            http_response_code(500);
+            http_response_code(400);
 
-            echo json_encode(['error' => 'server_error']);
+            echo json_encode(['error' => 'invalid_parameters', 'context' => 'gameId provided is not valid']);
             return;
         }
 
         if ($x < 0 && $x >= $game->gridWidth && $y < 0 && $y >= $game->gridHeight) {
             http_response_code(400);
 
-            echo json_encode(['error' => 'invalid_parameters']);
+            echo json_encode(['error' => 'invalid_parameters', 'context' => 'x, y coordinates not valid']);
             return;
         }
 
-        $teamId = null;
-
-        if ($game->team1->marks[0]->id > $game->team2->marks[0]->id) { // check if most recent team who played is the first one
-            $teamId = $game->team2->id;
-        } else {
-            $teamId = $game->team1->id;
-        }
+        $teamId = getNextTeam($game);
 
         if (isIllegalPlacement($game, $x, $y)) {
             http_response_code(400);
 
-            echo json_encode(['error' => 'invalid_parameters']);
+            echo json_encode(['error' => 'invalid_parameters', 'context' => 'x, y coordinates illegals']);
             return;
         }
 
@@ -93,6 +128,7 @@ class Game
 
         $newMark = $markRepository->insertClassic($newMark);
 
+        http_response_code(200);
         echo json_encode($newMark);
     }
 }

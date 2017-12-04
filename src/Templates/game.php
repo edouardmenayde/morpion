@@ -19,14 +19,24 @@
     function sendPlacement(placement, cb) {
         const xhr = new XMLHttpRequest();
 
-        xhr.open('POST', '<?php echo SITE_URL . 'classic.php'; ?>');
-        xhr.onload = () => {
+        xhr.open('POST', '<?php echo SITE_URL . 'classic.php'; ?>', true);
+        xhr.onload = function (event) {
             if (this.status === 200) {
-                cb();
+                return cb(null, JSON.parse(this.response));
             }
+
+            return cb(event);
         };
 
-        xhr.send(placement);
+        const formData = new FormData();
+
+        for (let key in placement) {
+            if (placement.hasOwnProperty(key)) {
+                formData.append(key, placement[key]);
+            }
+        }
+
+        xhr.send(formData);
     }
 
     (() => {
@@ -50,7 +60,13 @@
 
         const ctx = canvas.getContext('2d');
 
+        const cross = Symbol('cross');
+        const circle = Symbol('circle');
+
         const teams = <?php echo json_encode([$game->team1, $game->team2]); ?>;
+        teams[0].mark = cross;
+        teams[1].mark = circle;
+
         const gameId = <?php echo json_encode($game->id); ?>;
 
         const backgroundColor = '#eee';
@@ -67,9 +83,26 @@
 
         createAndDrawGrid();
 
+        teams.forEach(team => {
+            const marks = team.marks;
+            ctx.strokeStyle = team.color;
+
+            marks.forEach(mark => {
+                const square = squares[mark.x][mark.y];
+
+                if (team.mark === cross) {
+                    drawCross(square);
+                }
+                else {
+                    drawCircle(square);
+                }
+            });
+        });
+
         let turn = 0;
 
         let finished = false;
+        let fetching = false;
 
         function createAndDrawGrid() {
             let i = 0;
@@ -108,7 +141,10 @@
             ctx.fillRect(x + delta, y + delta, widthPart - delta * 2, heightPart - delta * 2);
         }
 
-        function drawCross({centerX, centerY, x, y}, midX, midY) {
+        function drawCross({centerX, centerY, x, y}) {
+            const midX = widthPart / 4;
+            const midY = heightPart / 4;
+
             empty({x, y});
 
             ctx.lineWidth = 2;
@@ -130,7 +166,9 @@
             ctx.lineWidth = 1;
         }
 
-        function drawCircle({centerX, centerY, x, y}, radius) {
+        function drawCircle({centerX, centerY, x, y}) {
+            const radius = widthPart / 4;
+
             empty({x, y});
 
             ctx.lineWidth = 2;
@@ -256,7 +294,7 @@
         }
 
         canvas.addEventListener('click', event => {
-            if (finished) {
+            if (finished || fetching) {
                 return;
             }
 
@@ -269,62 +307,55 @@
                 throw new Error('Woa sth went very wrong.');
             }
 
-            if (square.content === 0 || square.content === 1) {
-                return;
-            }
 
-            const team = teams[turn];
+            fetching = true;
 
             sendPlacement({
-                teamId: turn,
                 gameId: gameId,
                 x: square.relativeX,
                 y: square.relativeY
-            }, (error) => {
+            }, (error, mark) => {
+                fetching = false;
+
                 if (error) {
-                    return console.error(error);
+                    return;
                 }
 
-                console.info('received');
-            });
+                const team = teams.find(team => team.id == mark.teamId);
 
+                ctx.strokeStyle = team.color;
 
-            ctx.strokeStyle = team.color;
+                if (turn === 0) {
+                    drawCross(square);
 
-            if (turn === 0) {
-                const midX = widthPart / 4;
-                const midY = heightPart / 4;
+                    square.content = team.id;
+                    turn = 1;
+                }
+                else {
+                    drawCircle(square);
 
-                drawCross(square, midX, midY);
+                    square.content = team.id;
+                    turn = 0;
+                }
 
-                square.content = 0;
-                turn = 1;
-            }
-            else {
-                drawCircle(square, widthPart / 4);
+                for (let i = 0; i < 2; i++) {
+                    if (isWinner(teams[i].id)) {
+                        finished = true;
+                        const winner = teams[i];
 
-                square.content = 1;
-                turn = 0;
-            }
+                        canvas.classList.add('finished');
 
-            for (let i = 0; i < 2; i++) {
-                if (isWinner(i)) {
-                    finished = true;
-                    const winner = teams[i];
+                        winnerName.style.color = winner.color;
+                        winnerName.textContent = winner.name;
+                        winnerText.classList.remove('hide');
+                    }
+                }
 
+                if (isNoWinner()) {
                     canvas.classList.add('finished');
-
-                    winnerName.style.color = winner.color;
-                    winnerName.textContent = winner.name;
-                    winnerText.classList.remove('hide');
+                    noWinnerText.classList.remove('hide');
                 }
-            }
-
-            if (isNoWinner()) {
-                canvas.classList.add('finished');
-                noWinnerText.classList.remove('hide');
-            }
-
+            });
         }, false);
     })();
 </script>
