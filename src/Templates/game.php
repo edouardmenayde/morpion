@@ -93,6 +93,10 @@
                     this.winnerName.textContent = winner.name;
                     this.winnerText.classList.remove('hide');
                 }
+                else if (this.game.ended) {
+                    this.canvas.classList.add('finished');
+                    this.noWinnerText.classList.remove('hide');
+                }
             }
 
             onClick(event) {
@@ -140,11 +144,6 @@
                     this.game = result.game;
 
                     this.updateGameStatus();
-
-                    if (result.isEnded) {
-                        this.canvas.classList.add('finished');
-                        this.noWinnerText.classList.remove('hide');
-                    }
                 });
             }
 

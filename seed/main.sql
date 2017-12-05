@@ -30,7 +30,8 @@ CREATE TABLE Game (
   gridHeight          INT,
   team1Id             INT                                NOT NULL,
   team2Id             INT                                NOT NULL,
-  winnerId            INT
+  winnerId            INT,
+  ended               BOOL            DEFAULT FALSE
 )
   ENGINE = InnoDB;
 

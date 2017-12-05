@@ -34,9 +34,22 @@ class GameRepository extends Repository
     {
         $connection = $this->getConnection();
 
-        $request = $connection->prepare('UPDATE Game SET winnerId=:winnerId WHERE id=:id');
+        $request = $connection->prepare('UPDATE Game SET winnerId=:winnerId, ended=true WHERE id=:id');
 
         $request->bindParam(':winnerId', $game->winnerId, PDO::PARAM_INT);
+        $request->bindParam(':id', $game->id, PDO::PARAM_INT);
+
+        $request->execute();
+
+        return $game;
+    }
+
+    public function updateStatus(Game $game) {
+        $connection = $this->getConnection();
+
+        $request = $connection->prepare('UPDATE Game SET ended=:ended WHERE id=:id');
+
+        $request->bindParam(':ended', $game->ended, PDO::PARAM_INT);
         $request->bindParam(':id', $game->id, PDO::PARAM_INT);
 
         $request->execute();
@@ -51,7 +64,7 @@ class GameRepository extends Repository
 
         $request = $connection->prepare('
           SELECT 
-          g.id, g.gridWidth, g.gridHeight, g.winnerId,
+          g.id, g.gridWidth, g.gridHeight, g.winnerId, g.ended,
           t1.id AS t1Id, t1.name AS t1Name, t1.color AS t1Color, 
           m1.id AS m1Id, m1.x AS m1X , m1.y AS m1Y,
           t2.id AS t2Id, t2.name AS t2Name, t2.color AS t2Color, 
@@ -75,10 +88,10 @@ class GameRepository extends Repository
             return false;
         }
 
-
         $game = new Game();
         $game->id = $results[0]['id'];
         $game->winnerId = $results[0]['winnerId'];
+        $game->ended = $results[0]['ended'];
         $game->gridHeight = $results[0]['gridHeight'];
         $game->gridWidth = $results[0]['gridWidth'];
 

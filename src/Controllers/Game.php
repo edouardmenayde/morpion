@@ -122,14 +122,18 @@ class Game
         $classicGameService->registerMark($newMark);
 
         $winner = $classicGameService->getWinner();
+        $ended = $classicGameService->isGameEnded();
 
         if ($winner) {
             $game->winnerId = (int) $winner;
             $gameRepository->updateWinner($game);
         }
+        elseif ($ended) {
+            $game->ended= true;
+            $gameRepository->updateStatus($game);
+        }
 
         $response = [
-            'isEnded' => $classicGameService->isGameEnded(),
             'game' => $game,
             'newMark' => $newMark
         ];
