@@ -5,26 +5,8 @@ namespace Epic\Controllers;
 use Epic\Entities\Mark;
 use Epic\Repositories\GameRepository;
 use Epic\Repositories\MarkRepository;
+use Epic\Services\ClassicGameService;
 use Epic\Templates\Template;
-
-
-function isIllegalPlacement($game, $x, $y)
-{
-    function testForTeam($team, $x, $y)
-    {
-        $illegalPlacement = false;
-
-        foreach ($team->marks as $mark) {
-            if ($mark->x == $x && $mark->y == $y) {
-                $illegalPlacement = true;
-            }
-        }
-
-        return $illegalPlacement;
-    }
-
-    return testForTeam($game->team1, $x, $y) || testForTeam($game->team2, $x, $y);
-}
 
 function getNextTeam($game)
 {
@@ -110,12 +92,21 @@ class Game
             return;
         }
 
+        $classicGameService = new ClassicGameService($game);
+
         $teamId = getNextTeam($game);
 
-        if (isIllegalPlacement($game, $x, $y)) {
+        if ($classicGameService->isIllegalPlacement($x, $y)) {
             http_response_code(400);
 
             echo json_encode(['error' => 'invalid_parameters', 'context' => 'x, y coordinates illegals']);
+            return;
+        }
+
+        if ($classicGameService->isGameEnded()) {
+            http_response_code(400);
+
+            echo json_encode(['error' => 'invalid_action', 'context' => 'game is ended']);
             return;
         }
 
@@ -128,7 +119,22 @@ class Game
 
         $newMark = $markRepository->insertClassic($newMark);
 
+        $classicGameService->registerMark($newMark);
+
+        $winner = $classicGameService->getWinner();
+
+        if ($winner) {
+            $game->winnerId = (int) $winner;
+            $gameRepository->updateWinner($game);
+        }
+
+        $response = [
+            'isEnded' => $classicGameService->isGameEnded(),
+            'game' => $game,
+            'newMark' => $newMark
+        ];
+
         http_response_code(200);
-        echo json_encode($newMark);
+        echo json_encode($response);
     }
 }

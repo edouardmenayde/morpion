@@ -21,12 +21,12 @@
             const xhr = new XMLHttpRequest();
 
             xhr.open('POST', '<?php echo SITE_URL . 'classic.php'; ?>', true);
-            xhr.onload = function (event) {
+            xhr.onload = function () {
                 if (this.status === 200) {
                     return cb(null, JSON.parse(this.response));
                 }
 
-                return cb(event);
+                return cb(JSON.parse(this.response).error);
             };
 
             const formData = new FormData();
@@ -77,28 +77,21 @@
                     .generateSquares()
                     .createAndDrawGrid()
                     .drawExistingMarks()
-                    .testGameStatus();
+                    .updateGameStatus();
 
                 this.canvas.addEventListener('click', this.onClick.bind(this), false);
             }
 
-            testGameStatus() {
-                for (let i = 0; i < 2; i++) {
-                    if (this.isWinner(this.teams[i].id)) {
-                        this.finished = true;
-                        const winner = this.teams[i];
+            updateGameStatus() {
+                console.log(this.game)
+                if (this.game.winnerId) {
+                    const winner = this.teams.find(team => team.id == this.game.winnerId);
 
-                        this.canvas.classList.add('finished');
-
-                        this.winnerName.style.color = winner.color;
-                        this.winnerName.textContent = winner.name;
-                        this.winnerText.classList.remove('hide');
-                    }
-                }
-
-                if (this.isNoWinner()) {
                     this.canvas.classList.add('finished');
-                    this.noWinnerText.classList.remove('hide');
+
+                    this.winnerName.style.color = winner.color;
+                    this.winnerName.textContent = winner.name;
+                    this.winnerText.classList.remove('hide');
                 }
             }
 
@@ -123,27 +116,35 @@
                     gameId: this.game.id,
                     x: square.relativeX,
                     y: square.relativeY
-                }, (error, mark) => {
+                }, (error, result) => {
                     this.fetching = false;
 
                     if (error) {
-                        return;
+                        return console.error(error);
                     }
 
-                    const team = this.teams.find(team => team.id == mark.teamId);
+                    if (result.newMark) {
+                        const mark = result.newMark;
+                        const team = this.teams.find(team => team.id == mark.teamId);
 
-                    this.ctx.strokeStyle = team.color;
+                        this.ctx.strokeStyle = team.color;
 
-                    if (team.mark.toString() === ClassicTicTacToe.CROSS.toString()) {
-                        this.drawCross(square);
-                        square.content = team.id;
+                        if (team.mark.toString() === ClassicTicTacToe.CROSS.toString()) {
+                            this.drawCross(square);
+                        }
+                        else {
+                            this.drawCircle(square);
+                        }
                     }
-                    else {
-                        this.drawCircle(square);
-                        square.content = team.id;
-                    }
 
-                    this.testGameStatus();
+                    this.game = result.game;
+
+                    this.updateGameStatus();
+
+                    if (result.isEnded) {
+                        this.canvas.classList.add('finished');
+                        this.noWinnerText.classList.remove('hide');
+                    }
                 });
             }
 
@@ -280,83 +281,6 @@
                 return this;
             }
 
-            isWinnerHorizontally(team) {
-                for (let i = 0; i < this.sides; i++) {
-                    let matches = 0;
-
-                    for (let j = 0; j < this.sides; j++) {
-                        if (this.squares[i][j].content === team) {
-                            matches++;
-                        }
-                    }
-
-                    if (matches === this.sides) {
-                        return true;
-                    }
-                }
-            }
-
-            isWinnerVertically(team) {
-                for (let i = 0; i < this.sides; i++) {
-                    let matches = 0;
-
-                    for (let j = 0; j < this.sides; j++) {
-                        if (this.squares[j][i].content === team) {
-                            matches++;
-                        }
-                    }
-
-                    if (matches === this.sides) {
-                        return true;
-                    }
-                }
-            }
-
-            isWinnerInDiagonal(team) {
-                let matches = 0;
-
-                for (let i = 0; i < this.sides; i++) {
-                    if (this.squares[i][i].content === team) {
-                        matches++;
-                    }
-                }
-
-                if (matches === this.sides) {
-                    return true;
-                }
-
-                matches = 0;
-
-                for (let i = 0; i < this.sides; i++) {
-                    if (this.squares[i][this.sides - 1 - i].content === team) {
-                        matches++;
-                    }
-                }
-
-                if (matches === this.sides) {
-                    return true;
-                }
-            }
-
-            isWinner(team) {
-                // we need to test if they are similar symbol on a line or diagonal
-                return this.isWinnerHorizontally(team) || this.isWinnerVertically(team) || this.isWinnerInDiagonal(team);
-            }
-
-            isNoWinner() {
-                let notEmpty = 0;
-
-                for (let i = 0; i < this.sides; i++) {
-                    for (let j = 0; j < this.sides; j++) {
-                        if (this.squares[i][j].content !== null) {
-                            notEmpty++;
-                        }
-                    }
-                }
-
-                return notEmpty === Math.pow(this.sides, 2);
-            }
-
             getMatchingSquare(x, y) {
                 let matchingSquare;
 
@@ -384,7 +308,7 @@
         ClassicTicTacToe.CROSS = Symbol('cross');
         ClassicTicTacToe.CIRCLE = Symbol('circle');
 
-        const game = new ClassicTicTacToe();
+        new ClassicTicTacToe();
 
     })();
 </script>

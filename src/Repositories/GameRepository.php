@@ -30,38 +30,16 @@ class GameRepository extends Repository
         return $game;
     }
 
-    public function get(int $id)
+    public function updateWinner(Game $game)
     {
         $connection = $this->getConnection();
 
-        $request = $connection->prepare('
-          SELECT g.id, g.gridWidth, g.gridHeight, t1.id AS t1Id, t1.name AS t1Name, t1.color AS t1Color, t2.id AS t2Id, t2.name AS t2Name, t2.color AS t2Color
-          FROM Game g
-          INNER JOIN Team t1 ON g.team1Id = t1.id
-          INNER JOIN Team t2 ON g.team2Id = t2.id
-          WHERE g.id = :id
-          ');
+        $request = $connection->prepare('UPDATE Game SET winnerId=:winnerId WHERE id=:id');
 
-        $request->bindParam(':id', $id, PDO::PARAM_INT);
+        $request->bindParam(':winnerId', $game->winnerId, PDO::PARAM_INT);
+        $request->bindParam(':id', $game->id, PDO::PARAM_INT);
 
         $request->execute();
-
-        $results = $request->fetch();
-
-        $game = new Game();
-        $game->id = $results['id'];
-        $game->gridHeight = $results['gridHeight'];
-        $game->gridWidth = $results['gridWidth'];
-
-        $game->team1 = new Team();
-        $game->team1->id = $results['t1Id'];
-        $game->team1->name = $results['t1Name'];
-        $game->team1->color = $results['t1Color'];
-
-        $game->team2 = new Team();
-        $game->team2->id = $results['t2Id'];
-        $game->team2->name = $results['t2Name'];
-        $game->team2->color = $results['t2Color'];
 
         return $game;
     }
@@ -73,11 +51,11 @@ class GameRepository extends Repository
 
         $request = $connection->prepare('
           SELECT 
-          g.id, g.gridWidth, g.gridHeight, 
+          g.id, g.gridWidth, g.gridHeight, g.winnerId,
           t1.id AS t1Id, t1.name AS t1Name, t1.color AS t1Color, 
-          m1.id AS m1Id, m1.x as m1X , m1.y as m1Y,
+          m1.id AS m1Id, m1.x AS m1X , m1.y AS m1Y,
           t2.id AS t2Id, t2.name AS t2Name, t2.color AS t2Color, 
-          m2.id AS m2Id, m2.x as m2X, m2.y as m2Y
+          m2.id AS m2Id, m2.x AS m2X, m2.y AS m2Y
           FROM Game g
           INNER JOIN Team t1 ON g.team1Id = t1.id
           LEFT JOIN Mark m1 ON t1.id = m1.teamId
@@ -97,8 +75,10 @@ class GameRepository extends Repository
             return false;
         }
 
+
         $game = new Game();
         $game->id = $results[0]['id'];
+        $game->winnerId = $results[0]['winnerId'];
         $game->gridHeight = $results[0]['gridHeight'];
         $game->gridWidth = $results[0]['gridWidth'];
 
@@ -129,6 +109,7 @@ class GameRepository extends Repository
                     $mark->id = $mark1Id;
                     $mark->x = $item['m1X'];
                     $mark->y = $item['m1Y'];
+                    $mark->teamId = $game->team1->id;
                     array_push($game->team1->marks, $mark);
                 }
             }
@@ -149,6 +130,7 @@ class GameRepository extends Repository
                     $mark->id = $mark2Id;
                     $mark->x = $item['m2X'];
                     $mark->y = $item['m2Y'];
+                    $mark->teamId = $game->team2->id;
                     array_push($game->team2->marks, $mark);
                 }
             }
