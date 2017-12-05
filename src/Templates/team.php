@@ -1,36 +1,46 @@
+<?php
+include __dir__ . '/../Utilities/xss.php';
+?>
 <div class="form-team-container">
-    <form class="form-team" method="post" action="<?php echo SITE_URL ?>team.php">
+    <form class="form-team" method="post" action="<?php xecho(SITE_URL) ?>team.php">
         <div class="form-team-subform-container">
+            <?php if ($errors) {
+                ?>
+                <?php
+            }
+            ?>
+
             <?php foreach ([1, 2] as $team) { ?>
                 <div>
-                    <h2>Équipe <?php echo $team; ?></h2>
+                    <h2>Équipe <?php xecho($team); ?></h2>
                     <div class="form-group">
-                        <label for="teamname<?php echo $team; ?>">Votre équipe epic</label>
+                        <label for="teamname<?php xecho($team); ?>">Votre équipe epic</label>
                         <input required
                                class="form-control"
                                type="text"
-                               name="team<?php echo $team; ?>[name]"
-                               id="teamname<?php echo $team; ?>"
+                               name="team<?php xecho($team); ?>[name]"
+                               id="teamname<?php xecho($team); ?>"
                                placeholder="Ex : la confrérie de l'anneau"
                                maxlength="255"/>
                     </div>
                     <div class="form-group">
-                        <label for="team<?php echo $team; ?>[color]">Votre couleur epic</label>
-                        <input value="<?php echo '#' . dechex(rand(256, 16777215)) ?>" required class="color-input" type="color" name="team<?php echo $team; ?>[color]"
-                               id="team<?php echo $team; ?>[color]"/>
+                        <label for="team<?php xecho($team); ?>[color]">Votre couleur epic</label>
+                        <input value="<?php xecho('#' . dechex(rand(256, 16777215))); ?>" required class="color-input"
+                               type="color" name="team<?php xecho($team); ?>[color]"
+                               id="team<?php xecho($team); ?>[color]"/>
                     </div>
                     <?php if ($gameType === 'advanced') { ?>
                         <div class="form-group">
-                            <select data-id="<?php echo $team; ?>"
-                                    id="team-<?php echo $team; ?>-marks"
+                            <select data-id="<?php xecho($team); ?>"
+                                    id="team-<?php xecho($team); ?>-marks"
                                     required
                                     multiple
-                                    name="team<?php echo $team; ?>[marks][]">
+                                    name="team<?php xecho($team); ?>[marks][]">
                                 <?php
                                 foreach ($markModels as $markModel) {
                                     ?>
-                                    <option name="<?php echo $markModel->id; ?>"
-                                            value="<?php echo $markModel->id; ?>"><?php echo $markModel->name; ?></option>
+                                    <option name="<?php xecho($markModel->id); ?>"
+                                            value="<?php xecho($markModel->id); ?>"><?php xecho($markModel->name); ?></option>
                                     <?php
                                 }
                                 ?>
@@ -40,10 +50,10 @@
                                 <?php
                                 foreach ($wizards as $wizard) {
                                     ?>
-                                    <div onclick="selectMark(<?php echo $team; ?>, this)"
+                                    <div onclick="selectMark(<?php xecho($team); ?>, this)"
                                          class="form-team-mark"
-                                         data-mark-id="<?php echo $wizard->id; ?>"
-                                         data-team="<?php echo $team; ?>"></div>
+                                         data-mark-id="<?php xecho($wizard->id); ?>"
+                                         data-team="<?php xecho($team); ?>"></div>
                                     <?php
                                 }
                                 ?>
@@ -53,11 +63,11 @@
                                 <?php
                                 foreach ($warriors as $warrior) {
                                     ?>
-                                    <div onclick="selectMark(<?php echo $team; ?>, this)"
+                                    <div onclick="selectMark(<?php xecho($team); ?>, this)"
                                          class="form-team-mark"
-                                         data-mark-id="<?php echo $warrior->id; ?>"
+                                         data-mark-id="<?php xecho($warrior->id); ?>"
                                          style="background-image: url('./images/warriors/valkyrie')"
-                                         data-team="<?php echo $team; ?>"></div>
+                                         data-team="<?php xecho($team); ?>"></div>
                                     <?php
                                 }
                                 ?>
@@ -67,10 +77,10 @@
                                 <?php
                                 foreach ($archers as $archer) {
                                     ?>
-                                    <div onclick="selectMark(<?php echo $team; ?>, this)"
+                                    <div onclick="selectMark(<?php xecho($team); ?>, this)"
                                          class="form-team-mark"
-                                         data-team="<?php echo $team; ?>"
-                                         data-mark-id="<?php echo $archer->id; ?>"></div>
+                                         data-team="<?php xecho($team); ?>"
+                                         data-mark-id="<?php xecho($archer->id); ?>"></div>
                                     <?php
                                 }
                                 ?>
@@ -81,7 +91,7 @@
             <?php } ?>
         </div>
 
-        <input type="hidden" name="type" value="<?php echo $gameType ?>" />
+        <input type="hidden" name="type" value="<?php xecho($gameType); ?>"/>
 
         <div class="form-group form-team-submit-container">
             <input class="submit-input" type="submit" value="Jouer"/>

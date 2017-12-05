@@ -1,7 +1,11 @@
+<?php
+include __dir__ . '/../Utilities/xss.php';
+?>
 <div class="container">
     <div class="teams">
-        <h2><span style="color:<?php echo $game->team1->color; ?>"><?php echo $game->team1->name; ?></span> vs <span
-                    style="color:<?php echo $game->team2->color; ?>"><?php echo $game->team2->name; ?></span></h2>
+        <h2><span style="color:<?php xecho($game->team1->color); ?>"><?php xecho($game->team1->name); ?></span> vs
+            <span
+                    style="color:<?php xecho($game->team2->color); ?>"><?php xecho($game->team2->name); ?></span></h2>
     </div>
     <div class="grid-container">
         <canvas class="grid"></canvas>
@@ -20,7 +24,7 @@
         function sendPlacement(placement, cb) {
             const xhr = new XMLHttpRequest();
 
-            xhr.open('POST', '<?php echo SITE_URL . 'classic.php'; ?>', true);
+            xhr.open('POST', '<?php xecho(SITE_URL . 'classic.php'); ?>', true);
             xhr.onload = function () {
                 if (this.status === 200) {
                     return cb(null, JSON.parse(this.response));
@@ -62,7 +66,7 @@
 
                 this.ctx = this.canvas.getContext('2d');
 
-                this.game = <?php echo json_encode($game); ?>;
+                this.game = <?php echo(json_encode($game)); ?>;
 
                 this.teams = [this.game.team1, this.game.team2];
                 this.giveEachTeamAMark();
@@ -83,7 +87,6 @@
             }
 
             updateGameStatus() {
-                console.log(this.game)
                 if (this.game.winnerId) {
                     const winner = this.teams.find(team => team.id == this.game.winnerId);
 
@@ -93,7 +96,7 @@
                     this.winnerName.textContent = winner.name;
                     this.winnerText.classList.remove('hide');
                 }
-                else if (this.game.ended) {
+                else if (this.game.ended == true) {
                     this.canvas.classList.add('finished');
                     this.noWinnerText.classList.remove('hide');
                 }

@@ -10,23 +10,24 @@ use Epic\Repositories\MarkRepository;
 use Epic\Repositories\TeamRepository;
 use Epic\Templates\Template;
 use Epic\Entities\MarkModelType;
+use Whoops\Exception\ErrorException;
 
 class Team
 {
     private function validateTeam($team)
     {
-        if (count($team['name']) < 0) {
+        if (count_chars(trim($team['name'])) < 0) {
             return false;
         }
 
-        if (count($team['color']) < 0) {
+        if (count_chars(trim($team['color'])) < 0) {
             return false;
         }
 
         return true;
     }
 
-    public function show()
+    public function show($errors = null)
     {
         $markModelRepository = new MarkModelRepository();
 
@@ -52,17 +53,23 @@ class Team
             }
         }
 
-        $homePageView = new Template();
-        $homePageView->markModels = $markModels;
-        $homePageView->warriors = $warriors;
-        $homePageView->wizards = $wizards;
-        $homePageView->archers = $archers;
-        $homePageView->gameType = isset($_GET['type']) ? $_GET['type'] : 'classic';
+        $teamView = new Template();
+        $teamView->errors = $errors;
+        $teamView->markModels = $markModels;
+        $teamView->warriors = $warriors;
+        $teamView->wizards = $wizards;
+        $teamView->archers = $archers;
+        $teamView->gameType = isset($_GET['type']) ? $_GET['type'] : 'classic';
 
         $view = new Template();
-        $view->content = $homePageView->render('team.php');
+        try {
 
-        echo $view->render('layout.php');
+            $view->content = $teamView->render('team.php');
+
+            echo $view->render('layout.php');
+        } catch (\Exception $e) {
+            echo $e;
+        }
     }
 
     public function create()
@@ -71,17 +78,17 @@ class Team
         $teams = [];
 
         if (count($newTeams) !== 2) {
-            throw new \Exception('Two teams should be sent.');
+            return $this->show(['Deux équipes doivent être renseignés.']);
         }
 
         foreach ($newTeams as $newTeam) {
             if (!$this->validateTeam($newTeam)) {
-                throw new \Exception('Can\'t validate team.');
+                return $this->show(['Deux équipes doivent être renseignés.']);
             }
 
             $team = new Team();
-            $team->name = $newTeam['name'];
-            $team->color = $newTeam['color'];
+            $team->name = trim($newTeam['name']);
+            $team->color = trim($newTeam['color']);
 
             array_push($teams, $team);
         }
@@ -139,7 +146,6 @@ class Team
                 $id += 1;
             }
         }
-
 
         header('Location: ' . SITE_URL . 'game.php?id=' . $game->id);
         die();
