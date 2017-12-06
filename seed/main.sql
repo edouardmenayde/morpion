@@ -30,18 +30,19 @@ CREATE TABLE Game (
   gridHeight          INT,
   team1Id             INT                                NOT NULL,
   team2Id             INT                                NOT NULL,
-  winnerId            INT
+  winnerId            INT,
+  ended               BOOL            DEFAULT FALSE
 )
   ENGINE = InnoDB;
 
 DROP TABLE IF EXISTS Actions;
 CREATE TABLE Actions (
-  id         INT PRIMARY KEY AUTO_INCREMENT,
-  type       ENUM ('placement', 'attack', 'spell'),
-  x          INT,
-  y          INT,
-  teamMarkId INT,
-  gameId     INT
+  id     INT PRIMARY KEY AUTO_INCREMENT,
+  type   ENUM ('placement', 'attack', 'spell'),
+  x      INT,
+  y      INT,
+  markId INT,
+  gameId INT
 )
   ENGINE = InnoDB;
 
@@ -60,14 +61,14 @@ CREATE TABLE Configuration (
 DROP TABLE IF EXISTS Mark;
 CREATE TABLE Mark (
   id           INT PRIMARY KEY AUTO_INCREMENT,
-  damage       INT NOT NULL,
-  hp           INT NOT NULL,
-  mana         INT NOT NULL,
+  damage       INT,
+  hp           INT,
+  mana         INT,
   x            INT,
   y            INT,
-  doubleAttack INT NOT NULL,
+  doubleAttack INT,
   teamId       INT NOT NULL,
-  markModelId  INT NOT NULL
+  markModelId  INT
 )
   ENGINE = InnoDB;
 
@@ -81,7 +82,7 @@ ALTER TABLE Actions
 ALTER TABLE Actions
   ADD
   CONSTRAINT FK_Actions_id_Mark
-  FOREIGN KEY (teamMarkId)
+  FOREIGN KEY (markId)
   REFERENCES Mark (id);
 
 ALTER TABLE Mark
