@@ -3,12 +3,14 @@ include __dir__ . '/../Utilities/xss.php';
 ?>
 <div class="form-team-container">
     <form class="form-team" method="post" action="<?php xecho(SITE_URL) ?>team.php">
+        <?php if ($errors) { ?>
+            <ul class="form-team-errors">
+                <?php foreach ($errors as $error) { ?>
+                    <li><?php xecho($error); ?></li>
+                <?php } ?>
+            </ul>
+        <?php } ?>
         <div class="form-team-subform-container">
-            <?php if ($errors) {
-                ?>
-                <?php
-            }
-            ?>
 
             <?php foreach ([1, 2] as $team) { ?>
                 <div>

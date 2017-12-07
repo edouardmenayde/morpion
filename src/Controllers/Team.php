@@ -12,57 +12,73 @@ use Epic\Templates\Template;
 use Epic\Entities\MarkModelType;
 use Whoops\Exception\ErrorException;
 
-class Team
+class Validator
 {
-    private function validateTeam($team)
+    private $errors = [];
+
+    public function isInferiorOrEqualTo(int $length, $field, $value)
     {
-        if (count_chars(trim($team['name'])) < 0) {
-            return false;
+        if (strlen(trim($value)) > $length) {
+            $this->errors[strtolower($value)] = 'La valeur pour le champ <i>' . $field . '</i> doit être inférieur ou eǵal à ' . $length . ' caractères';
         }
-
-        if (count_chars(trim($team['color'])) < 0) {
-            return false;
-        }
-
-        return true;
     }
 
+    public function isSuperiorThan(int $length, $field, $value)
+    {
+        if (strlen(trim($value)) <= $length) {
+            $this->errors[strtolower($value)] = 'La valeur pour le champ <i>' . $field . '</i> doit être supérieur à ' . $length . ' caractères';
+        }
+    }
+
+    public function getErrors()
+    {
+        return $this->errors;
+    }
+
+    public function validate()
+    {
+        return count($this->errors) == 0;
+    }
+}
+
+class Team
+{
     public function show($errors = null)
     {
-        $markModelRepository = new MarkModelRepository();
-
-        $markModels = $markModelRepository->getAll();
-
-        $wizards = [];
-        $warriors = [];
-        $archers = [];
-
-        foreach ($markModels as $markModel) {
-            switch ($markModel->type) {
-                case MarkModelType::warrior:
-                    array_push($warriors, $markModel);
-                    break;
-                case MarkModelType::archer:
-                    array_push($archers, $markModel);
-                    break;
-                case MarkModelType::wizard:
-                    array_push($wizards, $markModel);
-                    break;
-                default:
-                    throw new \Exception("Could not find matching type for this mark.");
-            }
-        }
-
-        $teamView = new Template();
-        $teamView->errors = $errors;
-        $teamView->markModels = $markModels;
-        $teamView->warriors = $warriors;
-        $teamView->wizards = $wizards;
-        $teamView->archers = $archers;
-        $teamView->gameType = isset($_GET['type']) ? $_GET['type'] : 'classic';
-
-        $view = new Template();
         try {
+            $markModelRepository = new MarkModelRepository();
+
+            $markModels = $markModelRepository->getAll();
+
+            $wizards = [];
+            $warriors = [];
+            $archers = [];
+
+            foreach ($markModels as $markModel) {
+                switch ($markModel->type) {
+                    case MarkModelType::warrior:
+                        array_push($warriors, $markModel);
+                        break;
+                    case MarkModelType::archer:
+                        array_push($archers, $markModel);
+                        break;
+                    case MarkModelType::wizard:
+                        array_push($wizards, $markModel);
+                        break;
+                    default:
+                        throw new \Exception("Could not find matching type for this mark.");
+                }
+            }
+
+            $teamView = new Template();
+            $teamView->errors = $errors;
+            $teamView->markModels = $markModels;
+            $teamView->warriors = $warriors;
+            $teamView->wizards = $wizards;
+            $teamView->archers = $archers;
+            $teamView->gameType = isset($_GET['type']) ? $_GET['type'] : 'classic';
+
+            $view = new Template();
 
             $view->content = $teamView->render('team.php');
 
@@ -77,20 +93,30 @@ class Team
         $newTeams = [$_POST['team1'], $_POST['team2']];
         $teams = [];
 
+        $validator = new Validator();
+
         if (count($newTeams) !== 2) {
-            return $this->show(['Deux équipes doivent être renseignés.']);
+            $this->show(['Deux équipes doivent être renseignés.)']);
+            return;
         }
 
         foreach ($newTeams as $newTeam) {
-            if (!$this->validateTeam($newTeam)) {
-                return $this->show(['Deux équipes doivent être renseignés.']);
-            }
+            $validator->isInferiorOrEqualTo(255, "Nom d'équipe", $newTeam['name']);
+            $validator->isSuperiorThan(0, "Nom d'équipe", $newTeam['name']);
+
+            $validator->isInferiorOrEqualTo(255, "Couleur d'équipe", $newTeam['color']);
+            $validator->isSuperiorThan(0, "Couleur d'équipe", $newTeam['color']);
 
             $team = new Team();
             $team->name = trim($newTeam['name']);
             $team->color = trim($newTeam['color']);
 
             array_push($teams, $team);
+        }
+
+        if (!$validator->validate()) {
+            $this->show($validator->getErrors());
+            return;
         }
 
         $teamRepository = new TeamRepository();
