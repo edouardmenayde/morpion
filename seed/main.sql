@@ -26,12 +26,13 @@ CREATE TABLE Game (
   initialPoints       INT,
   initialDoubleAttack INT,
   maxDoubleAttack     INT,
-  gridWidth           INT,
-  gridHeight          INT,
+  gridWidth           INT                                NOT NULL,
+  gridHeight          INT                                NOT NULL,
   team1Id             INT                                NOT NULL,
   team2Id             INT                                NOT NULL,
   winnerId            INT,
-  ended               BOOL            DEFAULT FALSE
+  ended               BOOL            DEFAULT FALSE,
+  type                ENUM ('classic', 'advanced')       NOT NULL
 )
   ENGINE = InnoDB;
 

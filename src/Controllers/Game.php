@@ -29,17 +29,26 @@ class Game
 {
     public function show()
     {
-        $gameRepository = new GameRepository();
+        if (!isset($_GET['id'])) {
+            header('Location: ' . SITE_URL);
+            die();
+        }
 
-        $game = $gameRepository->getWithMarks((int)$_GET['id']);
+        try {
+            $gameRepository = new GameRepository();
 
-        $gameView = new Template();
-        $gameView->game = $game;
+            $game = $gameRepository->getWithMarks((int)$_GET['id']);
 
-        $view = new Template();
-        $view->content = $gameView->render('game.php');
+            $gameView = new Template();
+            $gameView->game = $game;
 
-        echo $view->render('layout.php');
+            $view = new Template();
+            $view->content = $gameView->render('game.php');
+
+            echo $view->render('layout.php');
+        } catch (\Exception $e) {
+            echo $e;
+        }
     }
 
     public function validateClassic($post)
@@ -57,6 +66,19 @@ class Game
         }
 
         return true;
+    }
+
+    public function advanced()
+    {
+        header('Content-type:application/json;charset=utf-8');
+
+
+        if (!$_POST) {
+            http_response_code(500);
+
+            echo json_encode(['error' => 'server_error']);
+            return;
+        }
     }
 
     public function classic()
@@ -125,11 +147,10 @@ class Game
         $ended = $classicGameService->isGameEnded();
 
         if ($winner) {
-            $game->winnerId = (int) $winner;
+            $game->winnerId = (int)$winner;
             $gameRepository->updateWinner($game);
-        }
-        elseif ($ended) {
-            $game->ended= true;
+        } elseif ($ended) {
+            $game->ended = true;
             $gameRepository->updateStatus($game);
         }
 

@@ -2,7 +2,6 @@
 
 namespace Epic\Entities;
 
-
 class Mark
 {
     public $id;

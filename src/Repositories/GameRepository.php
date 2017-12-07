@@ -13,7 +13,7 @@ class GameRepository extends Repository
     {
         $connection = $this->getConnection();
 
-        $request = $connection->prepare('INSERT INTO Game (initialPoints, initialDoubleAttack, maxDoubleAttack, gridWidth, gridHeight, team1Id, team2Id) VALUES (:initialPoints, :initialDoubleAttack, :maxDoubleAttack, :gridWidth, :gridHeight, :team1Id, :team2Id)');
+        $request = $connection->prepare('INSERT INTO Game (initialPoints, initialDoubleAttack, maxDoubleAttack, gridWidth, gridHeight, type,  team1Id, team2Id) VALUES (:initialPoints, :initialDoubleAttack, :maxDoubleAttack, :gridWidth, :gridHeight, :type, :team1Id, :team2Id)');
 
         $request->execute(array(
             ':initialPoints' => $game->initialPoints,
@@ -21,6 +21,7 @@ class GameRepository extends Repository
             ':maxDoubleAttack' => $game->maxDoubleAttack,
             ':gridWidth' => $game->gridWidth,
             ':gridHeight' => $game->gridHeight,
+            ':type' => $game->type,
             ':team1Id' => $game->team1Id,
             ':team2Id' => $game->team2Id
         ));
@@ -34,7 +35,7 @@ class GameRepository extends Repository
     {
         $connection = $this->getConnection();
 
-        $request = $connection->prepare('UPDATE Game SET winnerId=:winnerId, ended=true WHERE id=:id');
+        $request = $connection->prepare('UPDATE Game SET winnerId=:winnerId, ended=TRUE WHERE id=:id');
 
         $request->bindParam(':winnerId', $game->winnerId, PDO::PARAM_INT);
         $request->bindParam(':id', $game->id, PDO::PARAM_INT);
@@ -44,7 +45,8 @@ class GameRepository extends Repository
         return $game;
     }
 
-    public function updateStatus(Game $game) {
+    public function updateStatus(Game $game)
+    {
         $connection = $this->getConnection();
 
         $request = $connection->prepare('UPDATE Game SET ended=:ended WHERE id=:id');
@@ -64,7 +66,7 @@ class GameRepository extends Repository
 
         $request = $connection->prepare('
           SELECT 
-          g.id, g.gridWidth, g.gridHeight, g.winnerId, g.ended,
+          g.id, g.gridWidth, g.gridHeight, g.winnerId, g.ended, g.type,
           t1.id AS t1Id, t1.name AS t1Name, t1.color AS t1Color, 
           m1.id AS m1Id, m1.x AS m1X , m1.y AS m1Y,
           t2.id AS t2Id, t2.name AS t2Name, t2.color AS t2Color, 
@@ -92,6 +94,7 @@ class GameRepository extends Repository
         $game->id = $results[0]['id'];
         $game->winnerId = $results[0]['winnerId'];
         $game->ended = $results[0]['ended'];
+        $game->type = $results[0]['type'];
         $game->gridHeight = $results[0]['gridHeight'];
         $game->gridWidth = $results[0]['gridWidth'];
 

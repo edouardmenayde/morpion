@@ -3,6 +3,7 @@
 namespace Epic\Controllers;
 
 use Epic\Entities\Game;
+use Epic\Entities\GameType;
 use Epic\Entities\Mark;
 use Epic\Repositories\GameRepository;
 use Epic\Repositories\MarkModelRepository;
@@ -90,90 +91,106 @@ class Team
 
     public function create()
     {
-        $newTeams = [$_POST['team1'], $_POST['team2']];
-        $teams = [];
+        try {
+            $newTeams = [$_POST['team1'], $_POST['team2']];
+            $teams = [];
 
-        $validator = new Validator();
+            $validator = new Validator();
 
-        if (count($newTeams) !== 2) {
-            $this->show(['Deux équipes doivent être renseignés.)']);
-            return;
-        }
+            if (count($newTeams) !== 2) {
+                $this->show(['Deux équipes doivent être renseignés.)']);
+                return;
+            }
 
-        foreach ($newTeams as $newTeam) {
-            $validator->isInferiorOrEqualTo(255, "Nom d'équipe", $newTeam['name']);
-            $validator->isSuperiorThan(0, "Nom d'équipe", $newTeam['name']);
+            foreach ($newTeams as $newTeam) {
+                $validator->isInferiorOrEqualTo(255, "Nom d'équipe", $newTeam['name']);
+                $validator->isSuperiorThan(0, "Nom d'équipe", $newTeam['name']);
 
-            $validator->isInferiorOrEqualTo(255, "Couleur d'équipe", $newTeam['color']);
-            $validator->isSuperiorThan(0, "Couleur d'équipe", $newTeam['color']);
+                $validator->isInferiorOrEqualTo(255, "Couleur d'équipe", $newTeam['color']);
+                $validator->isSuperiorThan(0, "Couleur d'équipe", $newTeam['color']);
 
-            $team = new Team();
-            $team->name = trim($newTeam['name']);
-            $team->color = trim($newTeam['color']);
+                $team = new Team();
+                $team->name = trim($newTeam['name']);
+                $team->color = trim($newTeam['color']);
 
-            array_push($teams, $team);
-        }
+                array_push($teams, $team);
+            }
 
-        if (!$validator->validate()) {
-            $this->show($validator->getErrors());
-            return;
-        }
+            if (!$validator->validate()) {
+                $this->show($validator->getErrors());
+                return;
+            }
 
-        $teamRepository = new TeamRepository();
+            $teamRepository = new TeamRepository();
 
-        foreach ($teams as $key => $team) {
-            $teams[$key] = $teamRepository->insert($team);
-        }
+            foreach ($teams as $key => $team) {
+                $teams[$key] = $teamRepository->insert($team);
+            }
 
-        $gameRepository = new GameRepository();
+            $gameRepository = new GameRepository();
 
-        $game = new Game();
+            $game = new Game();
 
-        $game->team1Id = $teams[0]->id;
-        $game->team2Id = $teams[1]->id;
-        $game->gridHeight = 3;
-        $game->gridWidth = 3;
-        $game->initialDoubleAttack = 30;
-        $game->maxDoubleAttack = 30;
-        $game->initialPoints = 10;
+            $game->team1Id = $teams[0]->id;
+            $game->team2Id = $teams[1]->id;
+            $game->gridHeight = 3;
+            $game->gridWidth = 3;
+            $game->initialDoubleAttack = 30;
+            $game->maxDoubleAttack = 30;
+            $game->initialPoints = 10;
 
-        $game = $gameRepository->insert($game);
+            switch ($_POST['type']) {
+                case GameType::classic:
+                    $game->type = GameType::classic;
+                    break;
+                case GameType::advanced:
+                    $game->type = GameType::advanced;
+                    break;
+                default:
+                    throw new \Exception('Le type n\'est pas reconnu');
+            }
 
-        if ($_POST['type'] === 'advanced') {
-            $markModelRepository = new MarkModelRepository();
-            $markModels = $markModelRepository->getAll();
+            $game = $gameRepository->insert($game);
 
-            $markRepository = new MarkRepository();
+            if ($game->type === GameType::advanced) {
+                $markModelRepository = new MarkModelRepository();
+                $markModels = $markModelRepository->getAll();
 
-            $id = 0;
-            foreach ($newTeams as $team) {
-                foreach ($team['marks'] as $newMark) {
-                    $matchingMarkModel = null;
+                $markRepository = new MarkRepository();
 
-                    foreach ($markModels as $markModel) {
-                        if ($newMark == $markModel->id) {
-                            $matchingMarkModel = $markModel;
-                            break;
+                $id = 0;
+                foreach ($newTeams as $team) {
+                    foreach ($team['marks'] as $newMark) {
+                        $matchingMarkModel = null;
+
+                        foreach ($markModels as $markModel) {
+                            if ($newMark == $markModel->id) {
+                                $matchingMarkModel = $markModel;
+                                break;
+                            }
+                        }
+
+                        if ($matchingMarkModel) {
+                            $mark = new Mark();
+                            $mark->damage = $matchingMarkModel->damage;
+                            $mark->hp = $matchingMarkModel->hp;
+                            $mark->mana = $matchingMarkModel->mana;
+                            $mark->doubleAttack = 20;
+                            $mark->markModelId = $newMark;
+                            $mark->teamId = $teams[$id]->id;
+                            $markRepository->insertAdvanced($mark);
                         }
                     }
 
-                    if ($matchingMarkModel) {
-                        $mark = new Mark();
-                        $mark->damage = $matchingMarkModel->damage;
-                        $mark->hp = $matchingMarkModel->hp;
-                        $mark->mana = $matchingMarkModel->mana;
-                        $mark->doubleAttack = 20;
-                        $mark->markModelId = $newMark;
-                        $mark->teamId = $teams[$id]->id;
-                        $markRepository->insertAdvanced($mark);
-                    }
+                    $id += 1;
                 }
-
-                $id += 1;
             }
-        }
 
-        header('Location: ' . SITE_URL . 'game.php?id=' . $game->id);
-        die();
+            header('Location: ' . SITE_URL . 'game.php?id=' . $game->id);
+            die();
+        }
+        catch (\Exception $e) {
+            echo $e;
+        }
     }
 }
