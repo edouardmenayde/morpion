@@ -86,6 +86,11 @@ html, body {
     margin: 0 2.5em;
 }
 
+.form-config {
+    padding-bottom: 2em;
+}
+
+
 .form-team-subform-container {
     display: grid;
     justify-content: center;
@@ -181,6 +186,45 @@ html, body {
     background: #ececec;
 }
 
+.bouton-homepage {
+    transition: background-color .15s ease-in-out, border-color .15s ease-in-out, box-shadow .15s ease-in-out;
+    padding: .375rem .75rem;
+    font-size: 1rem;
+    line-height: 1.5;
+    border-radius: .25rem;
+    vertical-align: middle;
+    white-space: nowrap;
+    text-align: center;
+    display: inline-block;
+    cursor: pointer;
+
+
+}
+
 .hide {
     display: none;
+}
+
+
+
+.titre-homepage {
+    color: #495057;
+    background-color: #fff;
+    border: 1px solid #ced4da;
+    padding: .375rem .75rem;
+    margin-left: 1rem;
+    margin-right: 1rem;
+    text-align: center;
+}
+
+.formulaire-homepage {
+    color: #495057;
+    background-color: #fff;
+    border: 1px solid #ced4da;
+    padding: .375rem .75rem;
+    text-align: center;
+    margin-top: 0.5em;
+    margin-bottom: 0.5em;
+    margin-left: 1rem;
+    margin-right: 1rem;
 }
