@@ -29,7 +29,7 @@ class Template
         extract($this->vars);
         ob_start(); // Créer un buffer de sortie
 
-        include($view_template_file);
+        include_once(__DIR__ . '/' . $view_template_file);
 
         return ob_get_clean(); // Retourne le contenu du buffer
     }

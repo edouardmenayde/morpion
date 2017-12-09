@@ -19,10 +19,10 @@
 <div class="home-container">
     <aside id="aside">
         <header id="header">
-            <a href="/">
+            <a href="<?php echo SITE_URL ?>">
                 <img class="header-logo" src="<?php echo SITE_URL ?>images/logo.svg" alt="Logo epic morpion">
             </a>
-            <a class="header-title" href="/">
+            <a class="header-title" href="<?php echo SITE_URL ?>">
                 <h1>Epic Morpion</h1>
             </a>
         </header>
@@ -39,7 +39,7 @@
         </footer>
     </aside>
     <main id="main">
-        <?php echo $content; ?>
+        <?php if(isset($content)) echo $content; ?>
     </main>
 </div>
 </body>

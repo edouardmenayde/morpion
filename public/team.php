@@ -2,12 +2,12 @@
 
 require __DIR__ . '/../src/Bootstrap.php';
 
-if (!$_POST) {
-    throw new \Exception("Page should be called with POST");
-}
-
 use Epic\Controllers\Team;
 
 $controller = new Team();
+
+if ($_POST) {
+    return $controller->create();
+}
 
 $controller->show();

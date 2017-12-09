@@ -90,6 +90,13 @@ html, body {
     padding-bottom: 2em;
 }
 
+.form-team-errors {
+    display: block;
+    border: 1px solid #ebccd1;
+    color: #a94442;
+    background: #f2dede;
+    padding: 2em;
+}
 
 .form-team-subform-container {
     display: grid;
@@ -197,12 +204,51 @@ html, body {
     text-align: center;
     display: inline-block;
     cursor: pointer;
-
-
 }
 
 .hide {
-    display: none;
+    display: none !important;
+}
+
+.container {
+    display: flex;
+    height: 100%;
+    width: 100%;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+}
+
+.grid-container {
+    position: relative;
+    width: 44vw;
+    height: 44vw;
+}
+
+.grid {
+    border: 1px solid #b3b3b3;
+    width: inherit;
+    height: inherit;
+}
+
+.finished {
+    opacity: .2;
+}
+
+.teams {
+    text-align: center;
+    width: 100%;
+}
+
+.winner, .no-winner {
+    position: absolute;
+    width: 100%;
+    top: 0;
+    height: 100%;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 

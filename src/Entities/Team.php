@@ -8,4 +8,6 @@ class Team
     public $name;
     public $color;
     public $createdAt;
+
+    public $marks = [];
 }

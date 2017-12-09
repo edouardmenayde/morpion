@@ -6,7 +6,7 @@ use Epic\Entities\Mark;
 
 class MarkRepository extends Repository
 {
-    public function insert(Mark $mark)
+    public function insertAdvanced(Mark $mark)
     {
         $connection = $this->getConnection();
 
@@ -21,6 +21,22 @@ class MarkRepository extends Repository
             ':markModelId' => $mark->markModelId
         ));
 
+
+        $mark->id = $connection->lastInsertId();
+
+        return $mark;
+    }
+
+    public function insertClassic(Mark $mark) {
+        $connection = $this->getConnection();
+
+        $request = $connection->prepare('INSERT INTO Mark (x, y, teamId) VALUES (:x, :y, :teamId)');
+
+        $request->execute(array(
+            ':x' => $mark->x,
+            ':y' => $mark->y,
+            ':teamId' => $mark->teamId
+        ));
 
         $mark->id = $connection->lastInsertId();
 

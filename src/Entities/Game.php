@@ -14,4 +14,9 @@ class Game
     public $team1Id;
     public $team2Id;
     public $winnerId;
+    public $ended;
+
+    public $team1;
+    public $team2;
+    public $winner;
 }
