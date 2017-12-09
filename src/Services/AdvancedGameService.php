@@ -6,10 +6,32 @@ use Epic\Entities\Game;
 use Epic\Entities\Mark;
 use Epic\Entities\Team;
 
-class ClassicGameService extends GameService
+class AdvancedGameService extends GameService
 {
+    public function isIllegalPlacement($markId, $x, $y)
+    {
+        $alreadyPlaced = false;
+        foreach ($this->matrix as $line) {
+            foreach ($line as $mark) {
+                if ($mark) {
+                    if ($mark->id == $markId) {
+                        $alreadyPlaced = true;
+                    }
+                }
+            }
+        }
+
+        if ($alreadyPlaced) {
+            return true;
+        }
+
+        return $this->areCoordinatesAlreadyFilled($x, $y);
+    }
+
     public function getWinner()
     {
+        $team1Matches = 0;
+        $team2Matches = 0;
         $winner = null;
 
         // test horizontally
@@ -117,7 +139,7 @@ class ClassicGameService extends GameService
                 }
             }
         }
-        
+
         if ($team1Matches == $this->game->gridWidth) {
             $winner = $this->game->team1->id;
         }
@@ -132,10 +154,5 @@ class ClassicGameService extends GameService
     public function isGameEnded()
     {
         return $this->getWinner() || $this->isMatrixFull();
-    }
-
-    public function isIllegalPlacement($x, $y)
-    {
-        return $this->areCoordinatesAlreadyFilled($x, $y);
     }
 }

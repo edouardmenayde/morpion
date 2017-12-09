@@ -109,7 +109,6 @@ html, body {
 .form-team-mark {
     width: 3rem;
     height: 3rem;
-    background-image: url('../images/warriors/viking.png');
     background-color: #ececec;
     background-size: cover;
     border: 2px solid #616161;
@@ -228,4 +227,59 @@ html, body {
     display: flex;
     align-items: center;
     justify-content: center;
+}
+
+.img {
+    max-width: 100%;
+    height: auto;
+}
+
+.mark {
+    text-align: center;
+}
+
+.marks {
+    border-top: 1px solid #b3b3b3;
+    border-bottom: 1px solid #b3b3b3;
+    width: 15em;
+    height: 100%;
+    padding: 3em;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    align-items: center;
+}
+
+.marks:first-child {
+    border-left: 1px solid #b3b3b3;
+}
+
+.marks:last-child {
+    border-right: 1px solid #b3b3b3;
+}
+
+.advanced-game {
+    display: flex;
+}
+
+.menu {
+    display: block;
+    position: fixed;
+    list-style: none;
+    background: #fff;
+    width: 5em;
+    padding: 0;
+    margin: 0;
+    border: 1px solid #ababab;
+}
+
+.menu li {
+    width: 100%;
+    cursor: pointer;
+    text-align: center;
+    padding: 1em 0.5em;
+}
+
+.menu li:hover {
+    background: #e6e6e6;
 }

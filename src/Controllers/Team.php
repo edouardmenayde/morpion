@@ -133,8 +133,8 @@ class Team
 
             $game->team1Id = $teams[0]->id;
             $game->team2Id = $teams[1]->id;
-            $game->gridHeight = 3;
-            $game->gridWidth = 3;
+            $game->gridHeight = 4;
+            $game->gridWidth = 4;
             $game->initialDoubleAttack = 30;
             $game->maxDoubleAttack = 30;
             $game->initialPoints = 10;

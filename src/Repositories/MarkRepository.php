@@ -3,6 +3,7 @@
 namespace Epic\Repositories;
 
 use Epic\Entities\Mark;
+use PDO;
 
 class MarkRepository extends Repository
 {
@@ -39,6 +40,20 @@ class MarkRepository extends Repository
         ));
 
         $mark->id = $connection->lastInsertId();
+
+        return $mark;
+    }
+
+    public function updateMarkPlacement(Mark $mark) {
+        $connection = $this->getConnection();
+
+        $request = $connection->prepare('UPDATE Mark SET x=:x, y=:y WHERE id=:id');
+
+        $request->bindParam(':x', $mark->x, PDO::PARAM_INT);
+        $request->bindParam(':y', $mark->y, PDO::PARAM_INT);
+        $request->bindParam(':id', $mark->id, PDO::PARAM_INT);
+
+        $request->execute();
 
         return $mark;
     }

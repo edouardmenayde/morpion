@@ -13,4 +13,7 @@ class Mark
     public $doubleAttack;
     public $teamId;
     public $markModelId;
+
+    public $team;
+    public $markModel;
 }

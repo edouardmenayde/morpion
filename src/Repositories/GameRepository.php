@@ -4,6 +4,7 @@ namespace Epic\Repositories;
 
 use Epic\Entities\Game;
 use Epic\Entities\Mark;
+use Epic\Entities\MarkModel;
 use Epic\Entities\Team;
 use PDO;
 
@@ -69,13 +70,17 @@ class GameRepository extends Repository
           g.id, g.gridWidth, g.gridHeight, g.winnerId, g.ended, g.type,
           t1.id AS t1Id, t1.name AS t1Name, t1.color AS t1Color, 
           m1.id AS m1Id, m1.x AS m1X , m1.y AS m1Y,
+          mm1.name AS mm1Name, mm1.type AS mm1Type, mm1.icon AS mm1Icon,
           t2.id AS t2Id, t2.name AS t2Name, t2.color AS t2Color, 
-          m2.id AS m2Id, m2.x AS m2X, m2.y AS m2Y
+          m2.id AS m2Id, m2.x AS m2X, m2.y AS m2Y,
+          mm2.name AS mm2Name, mm2.type AS mm2Type, mm2.icon AS mm2Icon
           FROM Game g
           INNER JOIN Team t1 ON g.team1Id = t1.id
           LEFT JOIN Mark m1 ON t1.id = m1.teamId
+          LEFT JOIN MarkModel mm1 ON mm1.id = m1.markModelId
           INNER JOIN Team t2 ON g.team2Id = t2.id
           LEFT JOIN Mark m2 ON t2.id = m2.teamId
+          LEFT JOIN MarkModel mm2 ON mm2.id = m2.markModelId
           WHERE g.id = :id
           ORDER BY m1.id DESC, m2.id DESC
           ');
@@ -126,6 +131,13 @@ class GameRepository extends Repository
                     $mark->x = $item['m1X'];
                     $mark->y = $item['m1Y'];
                     $mark->teamId = $game->team1->id;
+
+                    $markModel = new MarkModel();
+                    $markModel->name = $item['mm1Name'];
+                    $markModel->type = $item['mm1Type'];
+                    $markModel->icon = $item['mm1Icon'];
+                    $mark->markModel = $markModel;
+
                     array_push($game->team1->marks, $mark);
                 }
             }
@@ -135,7 +147,7 @@ class GameRepository extends Repository
             if ($mark2Id) {
                 $matchForMark2 = false;
 
-                foreach ($game->team1->marks as $mark) {
+                foreach ($game->team2->marks as $mark) {
                     if ($mark->id === $mark2Id) {
                         $matchForMark2 = true;
                     }
@@ -147,6 +159,13 @@ class GameRepository extends Repository
                     $mark->x = $item['m2X'];
                     $mark->y = $item['m2Y'];
                     $mark->teamId = $game->team2->id;
+
+                    $markModel = new MarkModel();
+                    $markModel->name = $item['mm2Name'];
+                    $markModel->type = $item['mm2Type'];
+                    $markModel->icon = $item['mm2Icon'];
+                    $mark->markModel = $markModel;
+                    
                     array_push($game->team2->marks, $mark);
                 }
             }
