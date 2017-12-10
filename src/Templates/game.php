@@ -61,8 +61,10 @@ include __dir__ . '/../Utilities/xss.php';
                 this.canvas.width = this.width;
                 this.canvas.height = this.height;
 
-                this.leftOffset = this.canvas.parentElement.offsetLeft;
-                this.topOffset = this.canvas.parentElement.offsetTop;
+                const rect = this.canvas.getBoundingClientRect();
+
+                this.leftOffset = rect.left;
+                this.topOffset = rect.top;
 
                 this.ctx = this.canvas.getContext('2d');
 
@@ -107,8 +109,8 @@ include __dir__ . '/../Utilities/xss.php';
                     return;
                 }
 
-                const x = event.pageX - this.leftOffset;
-                const y = event.pageY - this.topOffset;
+                const x = event.clientX - this.leftOffset;
+                const y = event.clientY - this.topOffset;
 
                 const square = this.getMatchingSquare(x, y);
 
@@ -188,8 +190,7 @@ include __dir__ . '/../Utilities/xss.php';
                             x,
                             y,
                             centerX: w - (this.widthPart / 2),
-                            centerY: h - (this.heightPart / 2),
-                            content: null
+                            centerY: h - (this.heightPart / 2)
                         };
 
                         this.ctx.strokeRect(x, y, this.widthPart, this.heightPart);
@@ -271,11 +272,9 @@ include __dir__ . '/../Utilities/xss.php';
 
                         if (team.mark.toString() === ClassicTicTacToe.CROSS.toString()) {
                             this.drawCross(square);
-                            square.content = team.id;
                         }
                         else {
                             this.drawCircle(square);
-                            square.content = team.id;
                         }
                     });
                 });

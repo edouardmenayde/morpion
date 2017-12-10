@@ -6,47 +6,10 @@ use Epic\Entities\Game;
 use Epic\Entities\Mark;
 use Epic\Entities\Team;
 
-class ClassicGameService
+class ClassicGameService extends GameService
 {
-    private $matrix;
-    private $game;
-
-    private function registerTeamMarks(Team $team)
-    {
-        foreach ($team->marks as $mark) {
-            $this->registerMark($mark);
-        }
-    }
-
-    public function registerMark(Mark $mark)
-    {
-        $this->matrix[$mark->x][$mark->y] = $mark;
-    }
-
-    private function constructMatrix($width, $height)
-    {
-        $matrix = new \SplFixedArray($width);
-
-        foreach ($matrix as $i => $_) {
-            $matrix[$i] = new \SplFixedArray($height);
-        }
-
-        return $matrix;
-    }
-
-    public function __construct(Game $game)
-    {
-        $this->game = $game;
-        $this->matrix = $this->constructMatrix($this->game->gridWidth, $this->game->gridHeight);
-
-        $this->registerTeamMarks($game->team1);
-        $this->registerTeamMarks($game->team2);
-    }
-
     public function getWinner()
     {
-        $team1Matches = 0;
-        $team2Matches = 0;
         $winner = null;
 
         // test horizontally
@@ -69,7 +32,7 @@ class ClassicGameService
             }
 
             if ($team2Matches == $this->game->gridWidth) {
-                $winner = $this->game->team1->id;
+                $winner = $this->game->team2->id;
             }
         }
 
@@ -99,7 +62,7 @@ class ClassicGameService
             }
 
             if ($team2Matches == $this->game->gridHeight) {
-                $winner = $this->game->team1->id;
+                $winner = $this->game->team2->id;
 
             }
         }
@@ -131,7 +94,7 @@ class ClassicGameService
         }
 
         if ($team2Matches == $this->game->gridWidth) {
-            $winner = $this->game->team1->id;
+            $winner = $this->game->team2->id;
         }
 
         if ($winner) {
@@ -160,25 +123,10 @@ class ClassicGameService
         }
 
         if ($team2Matches == $this->game->gridWidth) {
-            $winner = $this->game->team1->id;
+            $winner = $this->game->team2->id;
         }
 
         return $winner;
-    }
-
-    public function isMatrixFull()
-    {
-        $defined = 0;
-
-        for ($i = 0; $i < $this->game->gridWidth; $i++) {
-            for ($j = 0; $j < $this->game->gridWidth; $j++) {
-                if ($this->matrix[$i] && $this->matrix[$i][$j]) {
-                    $defined += 1;
-                }
-            }
-        }
-
-        return ($defined == $this->game->gridWidth * $this->game->gridHeight);
     }
 
     public function isGameEnded()
@@ -188,6 +136,6 @@ class ClassicGameService
 
     public function isIllegalPlacement($x, $y)
     {
-        return $this->matrix[$x] && $this->matrix[$x][$y];
+        return $this->areCoordinatesAlreadyFilled($x, $y);
     }
 }

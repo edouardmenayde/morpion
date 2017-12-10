@@ -3,6 +3,7 @@
 namespace Epic\Repositories;
 
 use Epic\Entities\Mark;
+use PDO;
 
 class MarkRepository extends Repository
 {
@@ -39,6 +40,59 @@ class MarkRepository extends Repository
         ));
 
         $mark->id = $connection->lastInsertId();
+
+        return $mark;
+    }
+
+    public function updateMarkPlacement(Mark $mark) {
+        $connection = $this->getConnection();
+
+        $request = $connection->prepare('UPDATE Mark SET x=:x, y=:y WHERE id=:id');
+
+        $request->bindParam(':x', $mark->x, PDO::PARAM_INT);
+        $request->bindParam(':y', $mark->y, PDO::PARAM_INT);
+        $request->bindParam(':id', $mark->id, PDO::PARAM_INT);
+
+        $request->execute();
+
+        return $mark;
+    }
+
+    public function updateHP(Mark $mark) {
+        $connection = $this->getConnection();
+
+        $request = $connection->prepare('UPDATE Mark SET hp=:hp WHERE id=:id');
+
+        $request->bindParam(':hp', $mark->hp, PDO::PARAM_INT);
+        $request->bindParam(':id', $mark->id, PDO::PARAM_INT);
+
+        $request->execute();
+
+        return $mark;
+    }
+
+    public function updateDoubleAttack(Mark $mark) {
+        $connection = $this->getConnection();
+
+        $request = $connection->prepare('UPDATE Mark SET doubleAttack=:doubleAttack WHERE id=:id');
+
+        $request->bindParam(':doubleAttack', $mark->doubleAttack, PDO::PARAM_INT);
+        $request->bindParam(':id', $mark->id, PDO::PARAM_INT);
+
+        $request->execute();
+
+        return $mark;
+    }
+
+    public function updateMana(Mark $mark) {
+        $connection = $this->getConnection();
+
+        $request = $connection->prepare('UPDATE Mark SET mana=:mana WHERE id=:id');
+
+        $request->bindParam(':mana', $mark->mana, PDO::PARAM_INT);
+        $request->bindParam(':id', $mark->id, PDO::PARAM_INT);
+
+        $request->execute();
 
         return $mark;
     }

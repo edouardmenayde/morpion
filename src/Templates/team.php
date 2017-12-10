@@ -55,7 +55,9 @@ include __dir__ . '/../Utilities/xss.php';
                                     <div onclick="selectMark(<?php xecho($team); ?>, this)"
                                          class="form-team-mark"
                                          data-mark-id="<?php xecho($wizard->id); ?>"
-                                         data-team="<?php xecho($team); ?>"></div>
+                                         data-team="<?php xecho($team); ?>"
+                                         style="background-image: url('<?php echo SITE_URL . 'images/warriors/' . $wizard->icon ?>');"
+                                    ></div>
                                     <?php
                                 }
                                 ?>
@@ -68,8 +70,9 @@ include __dir__ . '/../Utilities/xss.php';
                                     <div onclick="selectMark(<?php xecho($team); ?>, this)"
                                          class="form-team-mark"
                                          data-mark-id="<?php xecho($warrior->id); ?>"
-                                         style="background-image: url('./images/warriors/valkyrie')"
-                                         data-team="<?php xecho($team); ?>"></div>
+                                         style="background-image: url('<?php echo SITE_URL . 'images/warriors/' . $warrior->icon ?>');"
+                                         data-team="<?php xecho($team); ?>"
+                                    ></div>
                                     <?php
                                 }
                                 ?>
@@ -82,7 +85,9 @@ include __dir__ . '/../Utilities/xss.php';
                                     <div onclick="selectMark(<?php xecho($team); ?>, this)"
                                          class="form-team-mark"
                                          data-team="<?php xecho($team); ?>"
-                                         data-mark-id="<?php xecho($archer->id); ?>"></div>
+                                         style="background-image: url('<?php echo SITE_URL . 'images/warriors/' . $archer->icon ?>');"
+                                         data-mark-id="<?php xecho($archer->id); ?>"
+                                    ></div>
                                     <?php
                                 }
                                 ?>
