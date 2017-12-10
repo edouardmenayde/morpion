@@ -6,4 +6,4 @@ use Epic\Controllers\GameController;
 
 $controller = new GameController();
 
-$controller->show();
+$controller->advanced();
