@@ -26,12 +26,33 @@
                 <h1>Epic Morpion</h1>
             </a>
         </header>
+        
+        <nav id="nav">
+            <ul class="nav-links">
+                <li><a href="<?php echo SITE_URL; ?>team.php">Partie classique</a></li>
+                <li><a href="<?php echo SITE_URL; ?>team.php?type=advanced">Partie avancé</a></li>
+            </ul>
+        </nav>
+
+        <div id="stats">
+            <h4 class="stats-title">Statistiques</h4>
+
+            <ul class="stats-list">
+                <li>Nombre de morpions : <?php echo (new \Epic\Repositories\MarkRepository()) ->count(); ?></li>
+                <li>Nombre de parties : <?php echo (new \Epic\Repositories\GameRepository()) ->count(); ?></li>
+                <li>Nombre d'actions : <?php echo (new \Epic\Repositories\ActionRepository())->count(); ?></li>
+            </ul>
+
+        </div>
 
         <footer id="footer">
             <div class="footer-links">
                 <a href="https://etu.univ-lyon1.fr/">UCBL1</a>
                 -
                 <a href="http://liris.cnrs.fr/fabien.duchateau/BDW1">BDW1</a>
+            </div>
+            <div class="footer-links">
+                <a href="https://openclipart.org/">Openclipart</a>
             </div>
             <div class="footer-year">
                 <span>2017-2018</span>

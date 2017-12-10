@@ -2,12 +2,41 @@
 
 namespace Epic\Controllers;
 
+use Epic\Entities\GameType;
 use Epic\Entities\MarkModelType;
 use Epic\Repositories\MarkModelRepository;
 use Epic\Templates\Template;
 
 class HomepageController
 {
+    public function play()
+    {
+        $action = isset($_POST['action']) ? $_POST['action'] : GameType::classic;
+        $gridsize = isset($_POST['gridsize']) ? $_POST['gridsize'] : 3;
+        $doubleAttack = isset($_POST['doubleAttack']) ? $_POST['doubleAttack'] : 10;
+
+        if ($action != GameType::classic && $action != GameType::advanced) {
+            $action = GameType::classic;
+        }
+
+        if ($gridsize != 3 && $gridsize != 4) {
+            $gridsize = 3;
+        }
+
+        if ($doubleAttack < 0) {
+            $doubleAttack = 20;
+        }
+
+        $url = 'Location: ' . SITE_URL . 'team.php?type=' . $action . '&gridSize=' . $gridsize;
+
+        if ($action == GameType::advanced) {
+            $url .= '&doubleAttack=' . $doubleAttack;
+        }
+
+        header($url);
+        die();
+    }
+
     public function show()
     {
         try {

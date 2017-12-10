@@ -11,4 +11,8 @@ use Epic\Controllers\HomepageController;
 
 $controller = new HomepageController();
 
+if ($_POST) {
+    return $controller->play();
+}
+
 $controller->show();
