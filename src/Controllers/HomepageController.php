@@ -11,12 +11,12 @@ class HomepageController
 {
     public function play()
     {
-        $action = isset($_POST['action']) ? $_POST['action'] : GameType::classic;
+        $type = isset($_POST['type']) ? $_POST['type'] : GameType::classic;
         $gridsize = isset($_POST['gridsize']) ? $_POST['gridsize'] : 3;
         $doubleAttack = isset($_POST['doubleAttack']) ? $_POST['doubleAttack'] : 10;
 
-        if ($action != GameType::classic && $action != GameType::advanced) {
-            $action = GameType::classic;
+        if ($type != GameType::classic && $type != GameType::advanced) {
+            $type = GameType::classic;
         }
 
         if ($gridsize != 3 && $gridsize != 4) {
@@ -27,9 +27,9 @@ class HomepageController
             $doubleAttack = 20;
         }
 
-        $url = 'Location: ' . SITE_URL . 'team.php?type=' . $action . '&gridSize=' . $gridsize;
+        $url = 'Location: ' . SITE_URL . 'team.php?type=' . $type . '&gridsize=' . $gridsize;
 
-        if ($action == GameType::advanced) {
+        if ($type == GameType::advanced) {
             $url .= '&doubleAttack=' . $doubleAttack;
         }
 

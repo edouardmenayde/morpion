@@ -77,7 +77,9 @@ class TeamController
             $teamView->warriors = $warriors;
             $teamView->wizards = $wizards;
             $teamView->archers = $archers;
-            $teamView->gameType = isset($_GET['type']) ? $_GET['type'] : 'classic';
+            $teamView->type = isset($_GET['type']) ? $_GET['type'] : 'classic';
+            $teamView->gridsize = isset($_GET['gridsize']) ? $_GET['gridsize'] : 3;
+            $teamView->doubleAttack = isset($_GET['doubleAttack']) ? $_GET['doubleAttack'] : 10;
 
             $view = new Template();
 
@@ -93,11 +95,14 @@ class TeamController
     {
         try {
             $newTeams = [$_POST['team1'], $_POST['team2']];
-            $gridsize = isset($_GET['gridsize']) ? $_GET['gridsize'] : 3;
+            $gridsize = isset($_POST['gridsize']) ? $_POST['gridsize'] : 3;
+
             if ($gridsize != 3 && $gridsize != 4) {
                 $gridsize = 3;
             }
+
             $doubleAttack = isset($_POST['doubleAttack']) ? $_POST['doubleAttack'] : 10;
+
             if ($doubleAttack < 0) {
                 $doubleAttack = 10;
             }

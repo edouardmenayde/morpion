@@ -11,7 +11,6 @@ include __dir__ . '/../Utilities/xss.php';
             </ul>
         <?php } ?>
         <div class="form-team-subform-container">
-
             <?php foreach ([1, 2] as $team) { ?>
                 <div>
                     <h2>Équipe <?php xecho($team); ?></h2>
@@ -31,7 +30,7 @@ include __dir__ . '/../Utilities/xss.php';
                                type="color" name="team<?php xecho($team); ?>[color]"
                                id="team<?php xecho($team); ?>[color]"/>
                     </div>
-                    <?php if ($gameType === 'advanced') { ?>
+                    <?php if ($type === 'advanced') { ?>
                         <div class="form-group">
                             <select data-id="<?php xecho($team); ?>"
                                     id="team-<?php xecho($team); ?>-marks"
@@ -98,7 +97,9 @@ include __dir__ . '/../Utilities/xss.php';
             <?php } ?>
         </div>
 
-        <input type="hidden" name="type" value="<?php xecho($gameType); ?>"/>
+        <input type="hidden" name="type" value="<?php xecho($type); ?>"/>
+        <input type="hidden" name="gridsize" value="<?php xecho($gridsize) ?>">
+        <input type="hidden" name="doubleAttack" value="<?php xecho($doubleAttack) ?>">
 
         <div class="form-group form-team-submit-container">
             <input class="submit-input" type="submit" value="Jouer"/>
