@@ -3,6 +3,7 @@
 namespace Epic\Controllers;
 
 use Epic\Entities\Action;
+use Epic\Entities\Game;
 use Epic\Entities\GameType;
 use Epic\Entities\ActionType;
 use Epic\Entities\Mark;
@@ -29,6 +30,31 @@ function getNextTeam($game)
     }
 
     return $game->team1->id;
+}
+
+function isActionNextUp(Game $game, Mark $mark)
+{
+    if (count($game->actions) == 0) {
+        return $game->team1->id == $mark->teamId;
+    }
+
+    $lastAction = $game->actions[0];
+
+    $teamIdOfMark = null;
+
+    foreach ($game->teams as $team) {
+        foreach ($team->marks as $m) {
+            if ($m->id == $lastAction->markId) {
+                $teamIdOfMark = $m->teamId;
+            }
+        }
+    }
+
+    if (!$teamIdOfMark) {
+        return false;
+    }
+
+    return $teamIdOfMark != $mark->teamId;
 }
 
 class GameController
@@ -179,6 +205,12 @@ class GameController
             throw new \Exception("Something is wrong");
         }
 
+        if (!isActionNextUp($game, $matchingMark)) {
+            http_response_code(400);
+
+            echo json_encode(['error' => 'invalid_action', 'context' => 'wrong team']);
+            return;
+        }
 
         if ($action == ActionType::placement) {
             if ($advancedGameService->isIllegalPlacement($markId, $x, $y)) {
@@ -205,8 +237,7 @@ class GameController
                 'game' => $game,
                 'updatedMarks' => [$matchingMark]
             ];
-        }
-        else {
+        } else {
             $target = $advancedGameService->get($x, $y);
 
             if ($action == ActionType::attack) {
@@ -288,8 +319,7 @@ class GameController
 
                 $markRepository->updateHP($target);
                 $markRepository->updateMana($matchingMark);
-            }
-            else {
+            } else {
                 throw new \Exception("Unknown action");
             }
 
@@ -321,11 +351,11 @@ class GameController
         $actionRepository = new ActionRepository();
 
         $newAction = new Action();
-        $newAction->x = (int) $x;
-        $newAction->y = (int) $y;
-        $newAction->gameId = (int) $gameId;
+        $newAction->x = (int)$x;
+        $newAction->y = (int)$y;
+        $newAction->gameId = (int)$gameId;
         $newAction->type = $action;
-        $newAction->markId = (int) $markId;
+        $newAction->markId = (int)$markId;
 
         $actionRepository->insert($newAction);
 
@@ -409,9 +439,9 @@ class GameController
         $actionRepository = new ActionRepository();
 
         $action = new Action();
-        $action->x = (int) $x;
-        $action->y = (int) $y;
-        $action->gameId = (int) $gameId;
+        $action->x = (int)$x;
+        $action->y = (int)$y;
+        $action->gameId = (int)$gameId;
         $action->type = ActionType::placement;
 
         $actionRepository->insert($action);

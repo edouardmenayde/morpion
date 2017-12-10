@@ -2,6 +2,7 @@
 
 namespace Epic\Repositories;
 
+use Epic\Entities\Action;
 use Epic\Entities\Game;
 use Epic\Entities\Mark;
 use Epic\Entities\MarkModel;
@@ -73,7 +74,8 @@ class GameRepository extends Repository
           mm1.name AS mm1Name, mm1.type AS mm1Type, mm1.icon AS mm1Icon, mm1.hp AS mm1Hp,
           t2.id AS t2Id, t2.name AS t2Name, t2.color AS t2Color, 
           m2.id AS m2Id, m2.x AS m2X , m2.y AS m2Y, m2.hp AS m2Hp, m2.damage AS m2Damage, m2.mana AS m2Mana, m2.doubleAttack AS m2DoubleAttack,
-          mm2.name AS mm2Name, mm2.type AS mm2Type, mm2.icon AS mm2Icon, mm2.hp AS mm2Hp
+          mm2.name AS mm2Name, mm2.type AS mm2Type, mm2.icon AS mm2Icon, mm2.hp AS mm2Hp,
+          a.id AS aId, a.type AS aType, a.x AS aX, a.y AS aY, a.gameId AS aGameId, a.markId AS aMarkId
           FROM Game g
           INNER JOIN Team t1 ON g.team1Id = t1.id
           LEFT JOIN Mark m1 ON t1.id = m1.teamId
@@ -81,8 +83,9 @@ class GameRepository extends Repository
           INNER JOIN Team t2 ON g.team2Id = t2.id
           LEFT JOIN Mark m2 ON t2.id = m2.teamId
           LEFT JOIN MarkModel mm2 ON mm2.id = m2.markModelId
+          LEFT JOIN Actions a ON a.gameId = g.id
           WHERE g.id = :id
-          ORDER BY m1.id DESC, m2.id DESC
+          ORDER BY m1.id DESC, m2.id DESC, a.id DESC
           ');
 
         $request->bindParam(':id', $id, PDO::PARAM_INT);
@@ -90,6 +93,10 @@ class GameRepository extends Repository
         $request->execute();
 
         $results = $request->fetchAll(PDO::FETCH_ASSOC);
+
+//        echo '<pre>';
+//        var_dump($results);
+//        echo '</pre>';
 
         if (count($results) == 0) {
             return false;
@@ -103,6 +110,7 @@ class GameRepository extends Repository
         $game->gridHeight = $results[0]['gridHeight'];
         $game->gridWidth = $results[0]['gridWidth'];
         $game->maxDoubleAttack = $results[0]['maxDoubleAttack'];
+        $game->actions = [];
 
         $team1 = new Team();
         $team1->id = $results[0]['t1Id'];
@@ -188,12 +196,37 @@ class GameRepository extends Repository
                     array_push($game->team2->marks, $mark);
                 }
             }
+
+            $actionId = $item['aId'];
+
+            if ($actionId) {
+                $matchForAction = null;
+
+                foreach ($game->actions as $action) {
+                    if ($action->id == $actionId) {
+                        $matchForAction = true;
+                    }
+                }
+
+                if (!$matchForAction) {
+                    $action = new Action();
+                    $action->id = $actionId;
+                    $action->x = $item['aX'];
+                    $action->y = $item['aY'];
+                    $action->type = $item['aType'];
+                    $action->gameId = $item['aGameId'];
+                    $action->markId = $item['aMarkId'];
+
+                    array_push($game->actions, $action);
+                }
+            }
         }
 
         return $game;
     }
 
-    public function count() {
+    public function count()
+    {
         $connection = $this->getConnection();
 
         $request = $connection->query('SELECT COUNT(*) AS count FROM Game');
