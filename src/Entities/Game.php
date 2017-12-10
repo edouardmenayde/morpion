@@ -21,4 +21,5 @@ class Game
     public $team2;
     public $winner;
     public $teams;
+    public $actions;
 }
