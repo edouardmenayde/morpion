@@ -1,119 +1,41 @@
-<div class="form-team-container">
-    <form class="form-team" method="post" action="<?php echo SITE_URL ?>team.php">
-        <div class="form-team-subform-container">
-            <?php foreach ([1, 2] as $team) { ?>
-                <div>
-                    <h2>Équipe <?php echo $team; ?></h2>
-                    <div class="form-group">
-                        <label for="teamname<?php echo $team; ?>">Votre équipe epic</label>
-                        <input required
-                               class="form-control"
-                               type="text"
-                               name="team<?php echo $team; ?>[name]"
-                               id="teamname<?php echo $team; ?>"
-                               placeholder="Ex : la confrérie de l'anneau"
-                               maxlength="255"/>
-                    </div>
-                    <div class="form-group">
-                        <label for="team<?php echo $team; ?>[color]">Votre couleur epic</label>
-                        <input required class="color-input" type="color" name="team<?php echo $team; ?>[color]"
-                               id="team<?php echo $team; ?>[color]"/>
-                    </div>
-                    <div class="form-group">
-                        <select data-id="<?php echo $team; ?>"
-                                id="team-<?php echo $team; ?>-marks"
-                                required
-                                multiple
-                                name="team<?php echo $team; ?>[marks][]">
-                            <?php
-                            foreach ($markModels as $markModel) {
-                                ?>
-                                <option name="<?php echo $markModel->id; ?>"
-                                        value="<?php echo $markModel->id; ?>"><?php echo $markModel->name; ?></option>
-                                <?php
-                            }
-                            ?>
-                        </select>
-                        <div class="form-team-marks hide">
-                            <h3 class="form-team-marks-title">Mages</h3>
-                            <?php
-                            foreach ($wizards as $wizard) {
-                                ?>
-                                <div onclick="selectMark(<?php echo $team; ?>, this)"
-                                     class="form-team-mark"
-                                     data-mark-id="<?php echo $wizard->id; ?>"
-                                     data-team="<?php echo $team; ?>"></div>
-                                <?php
-                            }
-                            ?>
-                        </div>
-                        <div class="form-team-marks hide">
-                            <h3 class="form-team-marks-title">Guerrier</h3>
-                            <?php
-                            foreach ($warriors as $warrior) {
-                                ?>
-                                <div onclick="selectMark(<?php echo $team; ?>, this)"
-                                     class="form-team-mark"
-                                     data-mark-id="<?php echo $warrior->id; ?>"
-                                     style="background-image: url('./images/warriors/valkyrie')"
-                                     data-team="<?php echo $team; ?>"></div>
-                                <?php
-                            }
-                            ?>
-                        </div>
-                        <div class="form-team-marks hide">
-                            <h3 class="form-team-marks-title">Archers</h3>
-                            <?php
-                            foreach ($archers as $archer) {
-                                ?>
-                                <div onclick="selectMark(<?php echo $team; ?>, this)"
-                                     class="form-team-mark"
-                                     data-team="<?php echo $team; ?>"
-                                     data-mark-id="<?php echo $archer->id; ?>"></div>
-                                <?php
-                            }
-                            ?>
-                        </div>
-                    </div>
-                </div>
-            <?php } ?>
-        </div>
+﻿    <div class="titre-homepage">
+        <h1>on se fait une partie ?</h1>
+        <p>Règles du jeu :
+Dans le jeu de morpion classique, il faut être le ou la première à aligner sur une grille
+une rangée de morpions (soit horizontalement, voit verticalement, soit en diagonale). Pour simplifier, on consi-
+dère que les deux joueur.euse.s jouent sur la même machine, chacun.e leur tour (pas de jeu en réseau), et en
+effectuant une seule action par tour. La grille est limitée aux dimensions 3x3 cases et 4x4 cases. Dans cette
+version avancée, les règles sont étendues pour que les morpions soient ”actifs” pendant la partie, mais elles
+restent volontairement basiques pour ne pas surcharger la programmation de l’application. Une équipe gagne
+quand elle aligne une rangée de morpions (3 morpions sur une grille de 3x3 ou 4 morpions sur une grille de
+4x4) ou quand tous les morpions adverses sont morts. Les morpions ont trois caractéristiques : points de vie,
+points de dégâts et points de mana. La somme des points de ces trois caractéristiques vaut 10 (valeur par
+défaut d’un paramètre de configuration). Quand les points de vie d’un morpion sont à zéro, il est mort (et la
+case de la grille redevient libre). Quand un morpion en attaque un autre, il lui inflige un nombre de dégâts
+égal à ses points de dégâts (i.e., on déduit les points de dégâts de l’attaquant aux points de vie de l’attaqué).
+        </p>
+    </div>
 
-        <div class="form-group form-team-submit-container">
-            <input class="submit-input" type="submit" value="Jouer (mode tradi)"/>
-            <input class="submit-input" type="submit" value="Jouer (mode avancé)"/>
-        </div>
-    </form>
-</div>
-
-<script>
-    (() => {
-        Array.from(document.querySelectorAll('select')).forEach(select => {
-            const team = select.dataset.id;
-
-            Array.from(select.selectedOptions).forEach(selectedOption => {
-                console.log(`div[data-team="${team}"][data-mark-id="${selectedOption.value}"]`);
-                const mark = document.querySelector(`div[data-team="${team}"][data-mark-id="${selectedOption.value}"]`);
-                mark.classList.add('form-team-mark-selected');
-            });
-
-            select.classList.add('hide');
-        });
-        Array.from(document.querySelectorAll('.form-team-marks')).forEach(marks => {
-            marks.classList.remove('hide');
-        })
-    })();
-
-    function selectMark(team, element) {
-        const selector = document.querySelector(`#team-${team}-marks`);
-        const id = element.dataset.markId;
-        const item = selector.namedItem(id);
-
-        if (!item.selected && selector.selectedOptions.length >= 8) {
-            return;
-        }
-
-        item.selected = !item.selected;
-        element.classList.toggle('form-team-mark-selected');
-    }
-</script>
+    <div class="formulaire-homepage">
+        <form>
+            <div>
+                dimensions de la grille ?
+                <br/>
+                <select name="gridsize">
+                    <optgroup >
+                    <option value="3" selected>3*3</option>
+                    <option value="4">4*4</option>
+                </select>
+            </div>
+            <div>
+                probabilité de double attaque ?
+                <br/>
+                0<input type="range" value="probabilité-double-attaque" min="0" max="30" step="2"/> 20
+            </div>
+            <br/>
+            <div>
+                <input class="bouton-homepage" type="submit" value="Jouer (mode tradi)"/>
+                <input class="bouton-homepage" type="submit" value="Jouer (mode avancé)"/>
+            </div>
+        </form>
+    </div>
