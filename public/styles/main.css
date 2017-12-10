@@ -16,8 +16,8 @@ html, body {
     display: grid;
     grid-template-areas: "aside main";
     grid-template-columns: 18em 1fr;
-    grid-column-gap: 0em;
-    grid-row-gap: 0em;
+    grid-column-gap: 0;
+    grid-row-gap: 0;
 }
 
 #header {
@@ -43,6 +43,38 @@ html, body {
     font-weight: 400;
 }
 
+#nav {
+    grid-area: nav;
+    border-bottom: 1px solid #E0E0E0;
+}
+
+.nav-links {
+    list-style: none;
+    margin: 0;
+    padding: 1em;
+}
+
+.nav-links li {
+    padding: 1em 1em;
+}
+
+.nav-links a {
+    color: #4a4a4a;
+    text-decoration: none;
+}
+
+#stats {
+    grid-area: stats;
+}
+
+.stats-title {
+    text-align: center;
+}
+
+.stats-list {
+    list-style: none;
+}
+
 #aside {
     grid-area: aside;
     width: 100%;
@@ -50,13 +82,14 @@ html, body {
     background: #fff;
     display: grid;
     grid-template-columns: 1fr;
-    grid-template-rows: 4em 1fr 3em;
-    grid-template-areas: "header" "." "footer";
+    grid-template-rows: 4em 8em 1fr 5em;
+    grid-template-areas: "header" "nav" "stats" "footer";
 }
 
 #main {
     grid-area: main;
     width: 100%;
+    height: inherit;
 }
 
 #footer {
@@ -67,6 +100,10 @@ html, body {
 #footer a {
     color: #9E9E9E;
     text-decoration: none;
+}
+
+.footer-links {
+    text-align: center;
 }
 
 .footer-year {
@@ -111,7 +148,7 @@ html, body {
 }
 
 .form-gridsize {
-    text-align: center;    
+    text-align: center;
 }
 
 .form-team-mark {
@@ -192,19 +229,6 @@ html, body {
     background: #ececec;
 }
 
-.bouton-homepage {
-    transition: background-color .15s ease-in-out, border-color .15s ease-in-out, box-shadow .15s ease-in-out;
-    padding: .375rem .75rem;
-    font-size: 1rem;
-    line-height: 1.5;
-    border-radius: .25rem;
-    vertical-align: middle;
-    white-space: nowrap;
-    text-align: center;
-    display: inline-block;
-    cursor: pointer;
-}
-
 .hide {
     display: none !important;
 }
@@ -250,28 +274,26 @@ html, body {
     justify-content: center;
 }
 
-.titre-homepage {
-    color: #495057;
-    background-color: #fff;
-    border: 1px solid #ced4da;
-    padding: .375rem .75rem;
-    margin-left: 1rem;
-    margin-right: 1rem;
-    text-align: center;
+.homepage-container {
+    display: flex;
+    height: inherit;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
 }
 
-.formulaire-homepage {
-    color: #495057;
-    background-color: #fff;
-    border: 1px solid #ced4da;
-    padding: .375rem .75rem;
-    text-align: center;
-    margin-top: 0.5em;
-    margin-bottom: 0.5em;
-    margin-left: 1rem;
-    margin-right: 1rem;
+.rules {
+    width: 50em;
+    background: #fff;
+    padding: 2em;
+}
 
-  
+.form-homepage-container {
+    margin-top: 2em;
+    background: #fff;
+    padding: 2em;
+}
+
 .img {
     max-width: 100%;
     height: auto;
@@ -325,4 +347,113 @@ html, body {
 
 .menu li:hover {
     background: #e6e6e6;
+}
+
+.doubleAttack {
+    display: flex;
+    align-items: center
+}
+
+/**
+Sources : http://brennaobrien.com/blog/2014/05/style-input-type-range-in-every-browser.html
+ */
+
+input[type=range] {
+    /*removes default webkit styles*/
+    -webkit-appearance: none;
+
+    /*fix for FF unable to apply focus style bug */
+    border: 1px solid white;
+
+    /*required for proper track sizing in FF*/
+    width: 300px;
+}
+
+input[type=range]::-webkit-slider-runnable-track {
+    width: 300px;
+    height: 5px;
+    background: #ddd;
+    border: none;
+    border-radius: 3px;
+}
+
+input[type=range]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    border: none;
+    height: 16px;
+    width: 16px;
+    border-radius: 50%;
+    background: goldenrod;
+    margin-top: -4px;
+}
+
+input[type=range]:focus {
+    outline: none;
+}
+
+input[type=range]:focus::-webkit-slider-runnable-track {
+    background: #ccc;
+}
+
+input[type=range]::-moz-range-track {
+    width: 300px;
+    height: 5px;
+    background: #ddd;
+    border: none;
+    border-radius: 3px;
+}
+
+input[type=range]::-moz-range-thumb {
+    border: none;
+    height: 16px;
+    width: 16px;
+    border-radius: 50%;
+    background: goldenrod;
+}
+
+/*hide the outline behind the border*/
+input[type=range]:-moz-focusring {
+    outline: 1px solid white;
+    outline-offset: -1px;
+}
+
+input[type=range]::-ms-track {
+    width: 300px;
+    height: 5px;
+
+    /*remove bg colour from the track, we'll use ms-fill-lower and ms-fill-upper instead */
+    background: transparent;
+
+    /*leave room for the larger thumb to overflow with a transparent border */
+    border-color: transparent;
+    border-width: 6px 0;
+
+    /*remove default tick marks*/
+    color: transparent;
+}
+
+input[type=range]::-ms-fill-lower {
+    background: #777;
+    border-radius: 10px;
+}
+
+input[type=range]::-ms-fill-upper {
+    background: #ddd;
+    border-radius: 10px;
+}
+
+input[type=range]::-ms-thumb {
+    border: none;
+    height: 16px;
+    width: 16px;
+    border-radius: 50%;
+    background: goldenrod;
+}
+
+input[type=range]:focus::-ms-fill-lower {
+    background: #888;
+}
+
+input[type=range]:focus::-ms-fill-upper {
+    background: #ccc;
 }

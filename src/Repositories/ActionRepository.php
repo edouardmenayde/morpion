@@ -25,4 +25,12 @@ class ActionRepository extends Repository
 
         return $action;
     }
+
+    public function count() {
+        $connection = $this->getConnection();
+
+        $request = $connection->query('SELECT COUNT(*) AS count FROM Actions');
+
+        return $request->fetch()['count'];
+    }
 }

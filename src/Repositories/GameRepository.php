@@ -192,4 +192,12 @@ class GameRepository extends Repository
 
         return $game;
     }
+
+    public function count() {
+        $connection = $this->getConnection();
+
+        $request = $connection->query('SELECT COUNT(*) AS count FROM Game');
+
+        return $request->fetch()['count'];
+    }
 }

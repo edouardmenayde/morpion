@@ -96,4 +96,12 @@ class MarkRepository extends Repository
 
         return $mark;
     }
+
+    public function count() {
+        $connection = $this->getConnection();
+
+        $request = $connection->query('SELECT COUNT(*) AS count FROM Mark');
+
+        return $request->fetch()['count'];
+    }
 }
