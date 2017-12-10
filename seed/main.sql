@@ -39,7 +39,7 @@ CREATE TABLE Game (
 DROP TABLE IF EXISTS Actions;
 CREATE TABLE Actions (
   id     INT PRIMARY KEY AUTO_INCREMENT,
-  type   ENUM ('placement', 'attack', 'spell', 'armageddon', 'heal'),
+  type   ENUM ('placement', 'attack', 'spell', 'armageddon', 'heal', 'arrowAttack'),
   x      INT,
   y      INT,
   markId INT,

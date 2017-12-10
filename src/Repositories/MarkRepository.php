@@ -57,4 +57,43 @@ class MarkRepository extends Repository
 
         return $mark;
     }
+
+    public function updateHP(Mark $mark) {
+        $connection = $this->getConnection();
+
+        $request = $connection->prepare('UPDATE Mark SET hp=:hp WHERE id=:id');
+
+        $request->bindParam(':hp', $mark->hp, PDO::PARAM_INT);
+        $request->bindParam(':id', $mark->id, PDO::PARAM_INT);
+
+        $request->execute();
+
+        return $mark;
+    }
+
+    public function updateDoubleAttack(Mark $mark) {
+        $connection = $this->getConnection();
+
+        $request = $connection->prepare('UPDATE Mark SET doubleAttack=:doubleAttack WHERE id=:id');
+
+        $request->bindParam(':doubleAttack', $mark->doubleAttack, PDO::PARAM_INT);
+        $request->bindParam(':id', $mark->id, PDO::PARAM_INT);
+
+        $request->execute();
+
+        return $mark;
+    }
+
+    public function updateMana(Mark $mark) {
+        $connection = $this->getConnection();
+
+        $request = $connection->prepare('UPDATE Mark SET mana=:mana WHERE id=:id');
+
+        $request->bindParam(':mana', $mark->mana, PDO::PARAM_INT);
+        $request->bindParam(':id', $mark->id, PDO::PARAM_INT);
+
+        $request->execute();
+
+        return $mark;
+    }
 }

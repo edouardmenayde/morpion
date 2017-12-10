@@ -2,12 +2,59 @@
 
 namespace Epic\Services;
 
-use Epic\Entities\Game;
-use Epic\Entities\Mark;
-use Epic\Entities\Team;
+use Epic\Entities\MarkModelType;
 
 class AdvancedGameService extends GameService
 {
+    private function getLegalAttacks($mark)
+    {
+        $legalAttacks = [];
+        if ($mark->x == 0 && $mark->y == 0) {
+            array_push($legalAttacks, [$mark->x + 1, $mark->y]);
+            array_push($legalAttacks, [$mark->x, $mark->y + 1]);
+            array_push($legalAttacks, [$mark->x + 1, $mark->y + 1]);
+        } else if ($mark->x == $this->game->gridWidth - 1 && $this->game->gridHeight - 1) {
+            array_push($legalAttacks, [$mark->x - 1, $mark->y]);
+            array_push($legalAttacks, [$mark->x, $mark->y - 1]);
+            array_push($legalAttacks, [$mark->x - 1, $mark->y - 1]);
+        } else if ($mark->y == 0) {
+            array_push($legalAttacks, [$mark->x - 1, $mark->y]);
+            array_push($legalAttacks, [$mark->x - 1, $mark->y + 1]);
+            array_push($legalAttacks, [$mark->x, $mark->y + 1]);
+            array_push($legalAttacks, [$mark->x + 1, $mark->y + 1]);
+            array_push($legalAttacks, [$mark->x + 1, $mark->y]);
+        } else if ($mark->y == $this->game->gridHeight - 1) {
+            array_push($legalAttacks, [$mark->x - 1, $mark->y]);
+            array_push($legalAttacks, [$mark->x + 1, $mark->y - 1]);
+            array_push($legalAttacks, [$mark->x, $mark->y - 1]);
+            array_push($legalAttacks, [$mark->x + 1, $mark->y - 1]);
+            array_push($legalAttacks, [$mark->x + 1, $mark->y]);
+        } else if ($mark->x == 0) {
+            array_push($legalAttacks, [$mark->x, $mark->y - 1]);
+            array_push($legalAttacks, [$mark->x + 1, $mark->y - 1]);
+            array_push($legalAttacks, [$mark->x, $mark->y]);
+            array_push($legalAttacks, [$mark->x + 1, $mark->y + 1]);
+            array_push($legalAttacks, [$mark->x, $mark->y + 1]);
+        } else if ($mark->x == $this->game->gridWidth - 1) {
+            array_push($legalAttacks, [$mark->x, $mark->y - 1]);
+            array_push($legalAttacks, [$mark->x - 1, $mark->y - 1]);
+            array_push($legalAttacks, [$mark->x, $mark->y]);
+            array_push($legalAttacks, [$mark->x - 1, $mark->y + 1]);
+            array_push($legalAttacks, [$mark->x, $mark->y + 1]);
+        } else {
+            array_push($legalAttacks, [$mark->x - 1, $mark->y - 1]);
+            array_push($legalAttacks, [$mark->x, $mark->y - 1]);
+            array_push($legalAttacks, [$mark->x + 1, $mark->y - 1]);
+            array_push($legalAttacks, [$mark->x + 1, $mark->y]);
+            array_push($legalAttacks, [$mark->x + 1, $mark->y + 1]);
+            array_push($legalAttacks, [$mark->x, $mark->y + 1]);
+            array_push($legalAttacks, [$mark->x - 1, $mark->y + 1]);
+            array_push($legalAttacks, [$mark->x - 1, $mark->y]);
+        }
+
+        return $legalAttacks;
+    }
+
     public function isIllegalPlacement($markId, $x, $y)
     {
         $alreadyPlaced = false;
@@ -28,131 +75,159 @@ class AdvancedGameService extends GameService
         return $this->areCoordinatesAlreadyFilled($x, $y);
     }
 
+    public function isIllegalAttack($mark, $x, $y)
+    {
+        $target = $this->get($x, $y);
+
+        if (!$target) {
+            return true;
+        }
+
+        if ($mark->markModel->type == MarkModelType::archer) {
+            return true;
+        }
+
+        if ($target->teamId == $mark->teamId) {
+            return true;
+        }
+
+        if ($mark->hp <= 0 || $target->hp <= 0) {
+            return true;
+        }
+
+        $legalAttacks = $this->getLegalAttacks($mark);
+
+        $illegal = true;
+
+        foreach ($legalAttacks as $legalAttack) {
+            if ($legalAttack[0] == $x && $legalAttack[1] == $y) {
+                $illegal = false;
+            }
+        }
+        return $illegal;
+    }
+
+    public function isIllegalSpell($mark, $x, $y)
+    {
+        $target = $this->get($x, $y);
+
+        if (!$target) {
+            return true;
+        }
+
+        if ($mark->markModel->type != MarkModelType::wizard) {
+            return true;
+        }
+
+        if ($target->teamId == $mark->teamId) {
+            return true;
+        }
+
+        if ($mark->hp <= 0 || $target->hp <= 0) {
+            return true;
+        }
+
+        if ($mark->mana < 2) {
+            return true;
+        }
+
+        return false;
+    }
+
+    public function isIllegalHealing($mark, $x, $y)
+    {
+        $target = $this->get($x, $y);
+
+        if (!$target) {
+            return true;
+        }
+
+        if ($mark->markModel->type != MarkModelType::wizard) {
+            return true;
+        }
+
+        if ($mark->hp <= 0) {
+            return true;
+        }
+
+        if ($mark->mana < 1) {
+            return true;
+        }
+
+        return false;
+    }
+
+    public function isIllegalArmageddon($mark, $x, $y)
+    {
+        $target = $this->get($x, $y);
+
+        if (!$target) {
+            return true;
+        }
+
+        if ($mark->markModel->type != MarkModelType::wizard) {
+            return true;
+        }
+
+        if ($target->teamId == $mark->teamId) {
+            return true;
+        }
+
+        if ($mark->hp <= 0) {
+            return true;
+        }
+
+        if ($mark->mana < 5) {
+            return true;
+        }
+
+        return false;
+    }
+
+    public function isIllegalArrowAttack($mark, $x, $y)
+    {
+        $target = $this->get($x, $y);
+
+        if (!$target) {
+            return true;
+        }
+
+        if ($mark->markModel->type != MarkModelType::archer) {
+            return true;
+        }
+
+        if ($target->teamId == $mark->teamId) {
+            return true;
+        }
+
+        if ($mark->hp <= 0 || $target->hp <= 0) {
+            return true;
+        }
+
+        return false;
+    }
+
     public function getWinner()
     {
-        $team1Matches = 0;
-        $team2Matches = 0;
-        $winner = null;
+        $team1HP = array_reduce($this->game->team1->marks, function ($hp, $mark) {
+            return $hp + ($mark->hp >= 0 ? $mark->hp : 0);
+        }, 0);
 
-        // test horizontally
-        foreach ($this->matrix as $line) {
-            $team1Matches = 0;
-            $team2Matches = 0;
+        $team2HP = array_reduce($this->game->team2->marks, function ($hp, $mark) {
+            return $hp + ($mark->hp >= 0 ? $mark->hp : 0);
+        }, 0);
 
-            foreach ($line as $item) {
-                if ($item) {
-                    if ($item->teamId == $this->game->team1->id) {
-                        $team1Matches += 1;
-                    } else if ($item->teamId == $this->game->team2->id) {
-                        $team2Matches += 1;
-                    }
-                }
-            }
-
-            if ($team1Matches == $this->game->gridWidth) {
-                $winner = $this->game->team1->id;
-            }
-
-            if ($team2Matches == $this->game->gridWidth) {
-                $winner = $this->game->team2->id;
-            }
+        if ($team1HP == 0 && $team2HP > 0) {
+            return $this->game->team2->id;
+        } elseif ($team2HP == 0 && $team1HP > 0) {
+            return $this->game->team1->id;
+        } else {
+            return false;
         }
-
-        if ($winner) {
-            return $winner;
-        }
-
-        // test vertically
-        for ($j = 0; $j < $this->game->gridHeight; $j++) {
-            $team1Matches = 0;
-            $team2Matches = 0;
-
-            for ($i = 0; $i < $this->game->gridWidth; $i++) {
-                if ($this->matrix[$i] && $this->matrix[$i][$j]) {
-                    $item = $this->matrix[$i][$j];
-
-                    if ($item->teamId == $this->game->team1->id) {
-                        $team1Matches += 1;
-                    } else if ($item->teamId == $this->game->team2->id) {
-                        $team2Matches += 1;
-                    }
-                }
-            }
-
-            if ($team1Matches == $this->game->gridHeight) {
-                $winner = $this->game->team1->id;
-            }
-
-            if ($team2Matches == $this->game->gridHeight) {
-                $winner = $this->game->team2->id;
-
-            }
-        }
-
-        if ($winner) {
-            return $winner;
-        }
-
-        $team1Matches = 0;
-        $team2Matches = 0;
-
-        // test first diagonal
-        // here we assume $gridWidth = $gridHeight
-        for ($i = 0; $i < $this->game->gridWidth; $i++) {
-
-            if ($this->matrix[$i] && $this->matrix[$i][$i]) {
-                $item = $this->matrix[$i][$i];
-
-                if ($item->teamId == $this->game->team1->id) {
-                    $team1Matches += 1;
-                } else if ($item->teamId == $this->game->team2->id) {
-                    $team2Matches += 1;
-                }
-            }
-        }
-
-        if ($team1Matches == $this->game->gridWidth) {
-            $winner = $this->game->team1->id;
-        }
-
-        if ($team2Matches == $this->game->gridWidth) {
-            $winner = $this->game->team2->id;
-        }
-
-        if ($winner) {
-            return $winner;
-        }
-
-        $team1Matches = 0;
-        $team2Matches = 0;
-
-        // test first diagonal
-        // here we assume $gridWidth = $gridHeight
-        for ($i = 0; $i < $this->game->gridWidth; $i++) {
-            if ($this->matrix[$i] && $this->matrix[$i][$this->game->gridHeight - 1 - $i]) {
-                $item = $this->matrix[$i][$this->game->gridHeight - 1 - $i];
-
-                if ($item->teamId == $this->game->team1->id) {
-                    $team1Matches += 1;
-                } else if ($item->teamId == $this->game->team2->id) {
-                    $team2Matches += 1;
-                }
-            }
-        }
-
-        if ($team1Matches == $this->game->gridWidth) {
-            $winner = $this->game->team1->id;
-        }
-
-        if ($team2Matches == $this->game->gridWidth) {
-            $winner = $this->game->team2->id;
-        }
-
-        return $winner;
     }
 
     public function isGameEnded()
     {
-        return $this->getWinner() || $this->isMatrixFull();
+        return $this->getWinner();
     }
 }

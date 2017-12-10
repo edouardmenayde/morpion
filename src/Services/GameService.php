@@ -11,10 +11,15 @@ class GameService
     protected $matrix;
     protected $game;
 
+    public function get($x, $y)
+    {
+        return $this->matrix[(int)$x][(int)$y];
+    }
+
     private function registerTeamMarks(Team $team)
     {
         foreach ($team->marks as $mark) {
-            if ($mark->x && $mark->y) {
+            if ($mark->x != NULL && $mark->x >= 0 && $mark->x < $this->game->gridWidth && $mark->y >= 0 && $mark->y != NULL && $mark->y < $this->game->gridHeight) {
                 $this->registerMark($mark);
             }
         }

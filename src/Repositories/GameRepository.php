@@ -67,12 +67,12 @@ class GameRepository extends Repository
 
         $request = $connection->prepare('
           SELECT 
-          g.id, g.gridWidth, g.gridHeight, g.winnerId, g.ended, g.type,
+          g.id, g.gridWidth, g.gridHeight, g.winnerId, g.ended, g.type, g.maxDoubleAttack,
           t1.id AS t1Id, t1.name AS t1Name, t1.color AS t1Color, 
-          m1.id AS m1Id, m1.x AS m1X , m1.y AS m1Y,
+          m1.id AS m1Id, m1.x AS m1X , m1.y AS m1Y, m1.hp AS m1Hp, m1.damage AS m1Damage, m1.mana AS m1Mana, m1.doubleAttack AS m1DoubleAttack,
           mm1.name AS mm1Name, mm1.type AS mm1Type, mm1.icon AS mm1Icon,
           t2.id AS t2Id, t2.name AS t2Name, t2.color AS t2Color, 
-          m2.id AS m2Id, m2.x AS m2X, m2.y AS m2Y,
+          m2.id AS m2Id, m2.x AS m2X , m2.y AS m2Y, m2.hp AS m2Hp, m2.damage AS m2Damage, m2.mana AS m2Mana, m2.doubleAttack AS m2DoubleAttack,
           mm2.name AS mm2Name, mm2.type AS mm2Type, mm2.icon AS mm2Icon
           FROM Game g
           INNER JOIN Team t1 ON g.team1Id = t1.id
@@ -102,16 +102,23 @@ class GameRepository extends Repository
         $game->type = $results[0]['type'];
         $game->gridHeight = $results[0]['gridHeight'];
         $game->gridWidth = $results[0]['gridWidth'];
+        $game->maxDoubleAttack = $results[0]['maxDoubleAttack'];
 
-        $game->team1 = new Team();
-        $game->team1->id = $results[0]['t1Id'];
-        $game->team1->name = $results[0]['t1Name'];
-        $game->team1->color = $results[0]['t1Color'];
+        $team1 = new Team();
+        $team1->id = $results[0]['t1Id'];
+        $team1->name = $results[0]['t1Name'];
+        $team1->color = $results[0]['t1Color'];
 
-        $game->team2 = new Team();
-        $game->team2->id = $results[0]['t2Id'];
-        $game->team2->name = $results[0]['t2Name'];
-        $game->team2->color = $results[0]['t2Color'];
+        $game->team1 = clone $team1;
+
+        $team2 = new Team();
+        $team2->id = $results[0]['t2Id'];
+        $team2->name = $results[0]['t2Name'];
+        $team2->color = $results[0]['t2Color'];
+
+        $game->team2 = clone $team2;
+
+        $game->teams = [$game->team1, $game->team2];
 
         foreach ($results as $item) {
             $mark1Id = $item['m1Id'];
@@ -130,7 +137,12 @@ class GameRepository extends Repository
                     $mark->id = $mark1Id;
                     $mark->x = $item['m1X'];
                     $mark->y = $item['m1Y'];
+                    $mark->damage = $item['m1Damage'];
+                    $mark->mana = $item['m1Mana'];
+                    $mark->hp = $item['m1Hp'];
+                    $mark->doubleAttack = $item['m1DoubleAttack'];
                     $mark->teamId = $game->team1->id;
+                    $mark->team = $team1;
 
                     $markModel = new MarkModel();
                     $markModel->name = $item['mm1Name'];
@@ -158,14 +170,19 @@ class GameRepository extends Repository
                     $mark->id = $mark2Id;
                     $mark->x = $item['m2X'];
                     $mark->y = $item['m2Y'];
+                    $mark->damage = $item['m2Damage'];
+                    $mark->mana = $item['m2Mana'];
+                    $mark->hp = $item['m2Hp'];
+                    $mark->doubleAttack = $item['m2DoubleAttack'];
                     $mark->teamId = $game->team2->id;
+                    $mark->team = $team2;
 
                     $markModel = new MarkModel();
                     $markModel->name = $item['mm2Name'];
                     $markModel->type = $item['mm2Type'];
                     $markModel->icon = $item['mm2Icon'];
                     $mark->markModel = $markModel;
-                    
+
                     array_push($game->team2->marks, $mark);
                 }
             }

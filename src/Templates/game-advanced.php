@@ -23,8 +23,11 @@ include __dir__ . '/../Utilities/xss.php';
                 <li id="heal">Soigner</li>
                 <li id="armageddon">Armageddon</li>
             </ul>
-            <ul class="menu hide" id="menu">
+            <ul class="menu hide" id="warrior-menu">
                 <li id="attack">Attaquer</li>
+            </ul>
+            <ul class="menu hide" id="archer-menu">
+                <li id="arrow-attack">Envoyer une flêche</li>
             </ul>
         </div>
         <div class="marks" id="team2-marks"></div>
@@ -64,8 +67,9 @@ include __dir__ . '/../Utilities/xss.php';
                 this.winnerName = this.winnerText.querySelector('#winner-name');
                 this.team1Marks = document.querySelector('#team1-marks');
                 this.team2Marks = document.querySelector('#team2-marks');
-                this.menu = document.querySelector('#menu');
+                this.warriorMenu = document.querySelector('#warrior-menu');
                 this.wizardMenu = document.querySelector('#wizard-menu');
+                this.archerMenu = document.querySelector('#archer-menu');
                 this.selectedMark = null;
                 this.showingMenu = false;
 
@@ -85,8 +89,6 @@ include __dir__ . '/../Utilities/xss.php';
                 this.ctx = this.canvas.getContext('2d');
 
                 this.game = <?php echo(json_encode($game)); ?>;
-
-                this.teams = [this.game.team1, this.game.team2];
 
                 this.sides = parseInt(this.game.gridWidth, 10); // assuming width = height which should be the case
 
@@ -108,10 +110,11 @@ include __dir__ . '/../Utilities/xss.php';
 
                 this.canvas.addEventListener('click', this.onClick.bind(this), false);
                 this.canvas.addEventListener('contextmenu', this.onContextMenu.bind(this), false);
-                document.querySelector('#attack').addEventListener('click', this.onAttack.bind(this, 'attack'), false);
-                document.querySelector('#heal').addEventListener('click', this.onAttack.bind(this, 'heal'), false);
-                document.querySelector('#spell').addEventListener('click', this.onAttack.bind(this, 'spell'), false);
-                document.querySelector('#armageddon').addEventListener('click', this.onAttack.bind(this, 'armageddon'), false);
+                document.querySelector('#attack').addEventListener('click', this.onAction.bind(this, 'attack'), false);
+                document.querySelector('#arrow-attack').addEventListener('click', this.onAction.bind(this, 'arrowAttack'), false);
+                document.querySelector('#heal').addEventListener('click', this.onAction.bind(this, 'heal'), false);
+                document.querySelector('#spell').addEventListener('click', this.onAction.bind(this, 'spell'), false);
+                document.querySelector('#armageddon').addEventListener('click', this.onAction.bind(this, 'armageddon'), false);
             }
 
             drawMarks(team, container) {
@@ -121,6 +124,7 @@ include __dir__ . '/../Utilities/xss.php';
                         if (mark.x && mark.y) {
                             matchingMarkElement.remove();
                         }
+
                         return;
                     }
 
@@ -138,7 +142,7 @@ include __dir__ . '/../Utilities/xss.php';
                     markElementImg.classList.add('img');
                     markElement.append(markElementImg);
 
-                    const markElementCaption = document.createElement('span');
+                    const markElementCaption = document.createElement('div');
                     markElementCaption.textContent = mark.markModel.name;
 
                     markElement.append(markElementCaption);
@@ -159,7 +163,7 @@ include __dir__ . '/../Utilities/xss.php';
 
             updateGameStatus() {
                 if (this.game.winnerId) {
-                    const winner = this.teams.find(team => team.id == this.game.winnerId);
+                    const winner = this.game.teams.find(team => team.id == this.game.winnerId);
 
                     this.canvas.classList.add('finished');
 
@@ -201,20 +205,17 @@ include __dir__ . '/../Utilities/xss.php';
                         return console.error(error);
                     }
 
-                    if (result.updatedMark) {
-                        const mark = result.updatedMark;
-
-                        this.placeMark(this.squares[mark.x][mark.y], mark);
-                    }
-
                     this.game = result.game;
+
+                    result.updatedMarks.forEach(mark => this.placeMark(this.squares[mark.x][mark.y], mark));
+
 
                     this.updateGameStatus();
                 });
             }
 
             onClick(event) {
-                if (this.finished || this.fetching) {
+                if (event.which !== 1) { // only left mouse button allowed to affect
                     return;
                 }
 
@@ -227,38 +228,47 @@ include __dir__ . '/../Utilities/xss.php';
                     throw new Error('Woa sth went very wrong.');
                 }
 
-                const previouslySelectedMark = this.selectedMark;
+                if (this.showingMenu) {
+                    this.hideMenu();
+                }
 
-                this.teams.forEach(team => {
+                this.game.teams.forEach(team => {
                     team.marks.forEach(mark => {
                         if (mark.x == square.relativeX && mark.y == square.relativeY) {
                             this.selectedMark = mark;
                         }
-                    });
+                    })
                 });
-
-                if (previouslySelectedMark && previouslySelectedMark.id === this.selectedMark.id) {
-                    this.selectedMark = null;
-                }
-
-                if (this.showingMenu) {
-                    this.hideMenu();
-                }
             }
 
             hideMenu() {
-                this.menu.classList.add('hide');
+                this.archerMenu.classList.add('hide');
                 this.wizardMenu.classList.add('hide');
+                this.warriorMenu.classList.add('hide');
 
                 this.showingMenu = false;
             }
 
             showMenu({x, y}) {
-                this.menu.classList.remove('hide');
-                this.menu.style.top = `${y}px`;
-                this.menu.style.left = `${x}px`;
-
                 this.showingMenu = true;
+
+                if (this.selectedMark.markModel.type === 'wizard') {
+                    this.wizardMenu.classList.remove('hide');
+                    this.wizardMenu.style.top = `${y}px`;
+                    this.wizardMenu.style.left = `${x}px`;
+                    return;
+                }
+
+                if (this.selectedMark.markModel.type === 'archer') {
+                    this.archerMenu.classList.remove('hide');
+                    this.archerMenu.style.top = `${y}px`;
+                    this.archerMenu.style.left = `${x}px`;
+                    return;
+                }
+
+                this.warriorMenu.classList.remove('hide');
+                this.warriorMenu.style.top = `${y}px`;
+                this.warriorMenu.style.left = `${x}px`;
             }
 
             onContextMenu(event) {
@@ -280,8 +290,42 @@ include __dir__ . '/../Utilities/xss.php';
                 this.showMenu({x: event.pageX, y: event.pageY});
             }
 
-            onAttack(action) {
-                console.info(action);
+            onAction(action, event) {
+                if (this.finished || this.fetching || !this.selectedMark) {
+                    return;
+                }
+
+                const x = event.pageX - this.leftOffset;
+                const y = event.pageY - this.topOffset;
+
+                const square = this.getMatchingSquare(x, y);
+
+                if (!square) {
+                    throw new Error('Woa sth went very wrong.');
+                }
+
+                this.hideMenu();
+
+                this.fetching = true;
+                sendAction({
+                    gameId: this.game.id,
+                    markId: this.selectedMark.id,
+                    x: square.relativeX,
+                    y: square.relativeY,
+                    action: action
+                }, (error, result) => {
+                    this.fetching = false;
+
+                    if (error) {
+                        return console.error(error);
+                    }
+
+                    result.updatedMarks.forEach(mark => this.placeMark(this.squares[mark.x][mark.y], mark));
+
+                    this.game = result.game;
+
+                    this.updateGameStatus();
+                });
             }
 
             setGlobalStyle() {
@@ -353,6 +397,12 @@ include __dir__ . '/../Utilities/xss.php';
                 this.ctx.fillRect(x + delta, y + delta, this.widthPart - delta * 2, this.heightPart - delta * 2);
             }
 
+            drawStatus({x, y}, mark) {
+                this.ctx.fillStyle = '#3d3d3d';
+                this.ctx.font = '13px serif';
+                this.ctx.fillText(`${mark.hp} HP | ${mark.mana} mana | ${mark.damage} dmg`, x + this.widthPart / 5, y + this.heightPart - 10);
+            }
+
             placeMark({x, y}, mark) {
                 this.empty({x, y});
 
@@ -368,13 +418,15 @@ include __dir__ . '/../Utilities/xss.php';
 
                 const delta = 1;
                 this.ctx.strokeWidth = 3;
-                this.ctx.fillStyle = this.teams.find(team => team.id == mark.teamId).color;
+                this.ctx.fillStyle = mark.team.color;
                 this.ctx.strokeRect(x + delta, y + delta, this.widthPart - delta * 2, this.heightPart - delta * 2);
                 this.ctx.strokeWidth = 1;
+
+                this.drawStatus({x, y}, mark);
             }
 
             drawExistingMarks() {
-                this.teams.forEach(team => {
+                this.game.teams.forEach(team => {
                     const marks = team.marks;
                     this.ctx.strokeStyle = team.color;
 
