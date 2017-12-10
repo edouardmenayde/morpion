@@ -14,4 +14,5 @@ class MarkModel
     public $name;
     public $icon;
     public $type;
+    public $hp;
 }

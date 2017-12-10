@@ -5,13 +5,13 @@ namespace Epic\Controllers;
 use Epic\Entities\Game;
 use Epic\Entities\GameType;
 use Epic\Entities\Mark;
+use Epic\Entities\Team;
 use Epic\Repositories\GameRepository;
 use Epic\Repositories\MarkModelRepository;
 use Epic\Repositories\MarkRepository;
 use Epic\Repositories\TeamRepository;
 use Epic\Templates\Template;
 use Epic\Entities\MarkModelType;
-use Whoops\Exception\ErrorException;
 
 class Validator
 {
@@ -42,7 +42,7 @@ class Validator
     }
 }
 
-class Team
+class TeamController
 {
     public function show($errors = null)
     {

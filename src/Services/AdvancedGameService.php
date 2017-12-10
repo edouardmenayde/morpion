@@ -146,7 +146,7 @@ class AdvancedGameService extends GameService
             return true;
         }
 
-        if ($mark->hp <= 0) {
+        if ($mark->hp <= 0 || $target->hp + 3 > $target->markModel->hp) {
             return true;
         }
 
@@ -180,6 +180,7 @@ class AdvancedGameService extends GameService
         if ($mark->mana < 5) {
             return true;
         }
+
 
         return false;
     }

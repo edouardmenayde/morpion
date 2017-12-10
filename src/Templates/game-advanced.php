@@ -72,6 +72,7 @@ include __dir__ . '/../Utilities/xss.php';
                 this.archerMenu = document.querySelector('#archer-menu');
                 this.selectedMark = null;
                 this.showingMenu = false;
+                this.menuPosition = {x: null, y: null}
 
                 if (!this.canvas.getContext) {
                     throw new Error('Canvas not supported');
@@ -247,10 +248,13 @@ include __dir__ . '/../Utilities/xss.php';
                 this.warriorMenu.classList.add('hide');
 
                 this.showingMenu = false;
+                this.menuPosition = {x: null, y: null};
             }
 
             showMenu({x, y}) {
                 this.showingMenu = true;
+
+                this.menuPosition = {x, y};
 
                 if (this.selectedMark.markModel.type === 'wizard') {
                     this.wizardMenu.classList.remove('hide');
@@ -290,13 +294,13 @@ include __dir__ . '/../Utilities/xss.php';
                 this.showMenu({x: event.pageX, y: event.pageY});
             }
 
-            onAction(action, event) {
+            onAction(action) {
                 if (this.finished || this.fetching || !this.selectedMark) {
                     return;
                 }
 
-                const x = event.pageX - this.leftOffset;
-                const y = event.pageY - this.topOffset;
+                const x = this.menuPosition.x - this.leftOffset;
+                const y = this.menuPosition.y - this.topOffset;
 
                 const square = this.getMatchingSquare(x, y);
 
@@ -400,6 +404,11 @@ include __dir__ . '/../Utilities/xss.php';
             drawStatus({x, y}, mark) {
                 this.ctx.fillStyle = '#3d3d3d';
                 this.ctx.font = '13px serif';
+
+                if (mark.hp <= 0) {
+                    this.ctx.fillStyle = 'red';
+                }
+
                 this.ctx.fillText(`${mark.hp} HP | ${mark.mana} mana | ${mark.damage} dmg`, x + this.widthPart / 5, y + this.heightPart - 10);
             }
 
@@ -416,11 +425,11 @@ include __dir__ . '/../Utilities/xss.php';
 
                 image.src = '<?php echo SITE_URL?>images/warriors/' + mark.markModel.icon + '.jpg';
 
-                const delta = 1;
-                this.ctx.strokeWidth = 3;
-                this.ctx.fillStyle = mark.team.color;
+                const delta = 2;
+                this.ctx.lineWidth = 3;
+                this.ctx.strokeStyle = mark.team.color;
                 this.ctx.strokeRect(x + delta, y + delta, this.widthPart - delta * 2, this.heightPart - delta * 2);
-                this.ctx.strokeWidth = 1;
+                this.ctx.lineWidth = 1;
 
                 this.drawStatus({x, y}, mark);
             }

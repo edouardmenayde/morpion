@@ -70,10 +70,10 @@ class GameRepository extends Repository
           g.id, g.gridWidth, g.gridHeight, g.winnerId, g.ended, g.type, g.maxDoubleAttack,
           t1.id AS t1Id, t1.name AS t1Name, t1.color AS t1Color, 
           m1.id AS m1Id, m1.x AS m1X , m1.y AS m1Y, m1.hp AS m1Hp, m1.damage AS m1Damage, m1.mana AS m1Mana, m1.doubleAttack AS m1DoubleAttack,
-          mm1.name AS mm1Name, mm1.type AS mm1Type, mm1.icon AS mm1Icon,
+          mm1.name AS mm1Name, mm1.type AS mm1Type, mm1.icon AS mm1Icon, mm1.hp AS mm1Hp,
           t2.id AS t2Id, t2.name AS t2Name, t2.color AS t2Color, 
           m2.id AS m2Id, m2.x AS m2X , m2.y AS m2Y, m2.hp AS m2Hp, m2.damage AS m2Damage, m2.mana AS m2Mana, m2.doubleAttack AS m2DoubleAttack,
-          mm2.name AS mm2Name, mm2.type AS mm2Type, mm2.icon AS mm2Icon
+          mm2.name AS mm2Name, mm2.type AS mm2Type, mm2.icon AS mm2Icon, mm2.hp AS mm2Hp
           FROM Game g
           INNER JOIN Team t1 ON g.team1Id = t1.id
           LEFT JOIN Mark m1 ON t1.id = m1.teamId
@@ -148,6 +148,7 @@ class GameRepository extends Repository
                     $markModel->name = $item['mm1Name'];
                     $markModel->type = $item['mm1Type'];
                     $markModel->icon = $item['mm1Icon'];
+                    $markModel->hp = $item['mm1Hp'];
                     $mark->markModel = $markModel;
 
                     array_push($game->team1->marks, $mark);
@@ -181,6 +182,7 @@ class GameRepository extends Repository
                     $markModel->name = $item['mm2Name'];
                     $markModel->type = $item['mm2Type'];
                     $markModel->icon = $item['mm2Icon'];
+                    $markModel->hp = $item['mm2Hp'];
                     $mark->markModel = $markModel;
 
                     array_push($game->team2->marks, $mark);

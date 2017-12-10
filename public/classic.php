@@ -2,8 +2,8 @@
 
 require __DIR__ . '/../src/Bootstrap.php';
 
-use Epic\Controllers\Game;
+use Epic\Controllers\GameController;
 
-$controller = new Game();
+$controller = new GameController();
 
 $controller->classic();

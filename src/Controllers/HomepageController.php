@@ -6,7 +6,7 @@ use Epic\Entities\MarkModelType;
 use Epic\Repositories\MarkModelRepository;
 use Epic\Templates\Template;
 
-class Homepage
+class HomepageController
 {
     public function show()
     {

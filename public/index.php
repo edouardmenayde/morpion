@@ -7,8 +7,8 @@
 
 require __DIR__ . '/../src/Bootstrap.php';
 
-use Epic\Controllers\Homepage;
+use Epic\Controllers\HomepageController;
 
-$controller = new Homepage();
+$controller = new HomepageController();
 
 $controller->show();

@@ -2,9 +2,9 @@
 
 require __DIR__ . '/../src/Bootstrap.php';
 
-use Epic\Controllers\Team;
+use Epic\Controllers\TeamController;
 
-$controller = new Team();
+$controller = new TeamController();
 
 if ($_POST) {
     return $controller->create();

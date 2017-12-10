@@ -2,10 +2,12 @@
 
 namespace Epic\Controllers;
 
+use Epic\Entities\Action;
 use Epic\Entities\GameType;
 use Epic\Entities\ActionType;
 use Epic\Entities\Mark;
 use Epic\Entities\MarkModelType;
+use Epic\Repositories\ActionRepository;
 use Epic\Repositories\GameRepository;
 use Epic\Repositories\MarkRepository;
 use Epic\Services\AdvancedGameService;
@@ -29,7 +31,7 @@ function getNextTeam($game)
     return $game->team1->id;
 }
 
-class Game
+class GameController
 {
     public function show_advanced($game)
     {
@@ -316,6 +318,17 @@ class Game
             ];
         }
 
+        $actionRepository = new ActionRepository();
+
+        $newAction = new Action();
+        $newAction->x = (int) $x;
+        $newAction->y = (int) $y;
+        $newAction->gameId = (int) $gameId;
+        $newAction->type = $action;
+        $newAction->markId = (int) $markId;
+
+        $actionRepository->insert($newAction);
+
         http_response_code(200);
         echo json_encode($response);
     }
@@ -392,6 +405,16 @@ class Game
             $game->ended = true;
             $gameRepository->updateStatus($game);
         }
+
+        $actionRepository = new ActionRepository();
+
+        $action = new Action();
+        $action->x = (int) $x;
+        $action->y = (int) $y;
+        $action->gameId = (int) $gameId;
+        $action->type = ActionType::placement;
+
+        $actionRepository->insert($action);
 
         $response = [
             'game' => $game,
