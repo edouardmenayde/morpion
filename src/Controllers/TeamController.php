@@ -139,8 +139,10 @@ class TeamController
                 $validator->isInferiorOrEqualTo(255, "Couleur d'équipe", $newTeam['color']);
                 $validator->isSuperiorThan(0, "Couleur d'équipe", $newTeam['color']);
 
-                $validator->isInferiorOrEqualTo(8, "morpion", $newTeam['marks']);
-                $validator->isSuperiorThan(3, "morpion", $newTeam['marks']);
+                if (isset($newTeam['marks'])) {
+                    $validator->isInferiorOrEqualTo(8, "morpion", $newTeam['marks']);
+                    $validator->isSuperiorThan(3, "morpion", $newTeam['marks']);
+                }
 
                 $team = new Team();
                 $team->name = trim($newTeam['name']);
