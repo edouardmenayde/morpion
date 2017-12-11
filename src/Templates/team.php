@@ -6,7 +6,7 @@ include __dir__ . '/../Utilities/xss.php';
         <?php if ($errors) { ?>
             <ul class="form-team-errors">
                 <?php foreach ($errors as $error) { ?>
-                    <li><?php xecho($error); ?></li>
+                    <li><?php echo($error); ?></li>
                 <?php } ?>
             </ul>
         <?php } ?>

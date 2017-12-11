@@ -19,15 +19,31 @@ class Validator
 
     public function isInferiorOrEqualTo(int $length, $field, $value)
     {
-        if (strlen(trim($value)) > $length) {
-            $this->errors[strtolower($value)] = 'La valeur pour le champ <i>' . $field . '</i> doit être inférieur ou eǵal à ' . $length . ' caractères';
+        if (is_string($value)) {
+            if (strlen(trim($value)) > $length) {
+                $this->errors[strtolower($value)] = 'La valeur pour le champ <i>' . $field . '</i> doit être inférieur ou eǵal à ' . $length . ' caractères';
+            }
+        }
+
+        if (is_array($value)) {
+            if (count($value) > $length) {
+                $this->errors[strtolower($value[0])] = 'Le nombre de <i>' . $field . '</i> doit être inférieur ou eǵal à ' . $length;
+            }
         }
     }
 
     public function isSuperiorThan(int $length, $field, $value)
     {
-        if (strlen(trim($value)) <= $length) {
-            $this->errors[strtolower($value)] = 'La valeur pour le champ <i>' . $field . '</i> doit être supérieur à ' . $length . ' caractères';
+        if (is_string($value)) {
+            if (strlen(trim($value)) <= $length) {
+                $this->errors[strtolower($value)] = 'La valeur pour le champ <i>' . $field . '</i> doit être supérieur à ' . $length . ' caractères';
+            }
+        }
+
+        if (is_array($value)) {
+            if (count($value) <= $length) {
+                $this->errors[strtolower($value[0])] = 'Le nombre de <i>' . $field . '</i> doit être supérieur  à ' . $length;
+            }
         }
     }
 
@@ -123,6 +139,9 @@ class TeamController
                 $validator->isInferiorOrEqualTo(255, "Couleur d'équipe", $newTeam['color']);
                 $validator->isSuperiorThan(0, "Couleur d'équipe", $newTeam['color']);
 
+                $validator->isInferiorOrEqualTo(8, "morpion", $newTeam['marks']);
+                $validator->isSuperiorThan(3, "morpion", $newTeam['marks']);
+
                 $team = new Team();
                 $team->name = trim($newTeam['name']);
                 $team->color = trim($newTeam['color']);
@@ -202,8 +221,7 @@ class TeamController
 
             header('Location: ' . SITE_URL . 'game.php?id=' . $game->id);
             die();
-        }
-        catch (\Exception $e) {
+        } catch (\Exception $e) {
             echo $e;
         }
     }
